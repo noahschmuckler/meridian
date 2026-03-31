@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Meridian — Controlled Substances Reference</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap');
+
+:root {
+–bg: #F4F1EC;
+–surface: #FDFCF9;
+–border: #D6D0C4;
+–text: #1C1A16;
+–text-muted: #6B6560;
+–accent: #1A5C3A;
+–accent-light: #EAF2ED;
+–accent-mid: #2D7A52;
+–warn: #7A3B1E;
+–warn-light: #F5EDE8;
+–mono: ‘IBM Plex Mono’, monospace;
+–sans: ‘IBM Plex Sans’, sans-serif;
+–radius: 4px;
+–transition: 240ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+- { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+font-family: var(–sans);
+background: var(–bg);
+color: var(–text);
+min-height: 100vh;
+font-size: 15px;
+line-height: 1.6;
+}
+
+/* ── Shell ── */
+.shell {
+max-width: 480px;
+margin: 0 auto;
+min-height: 100vh;
+background: var(–surface);
+border-left: 1px solid var(–border);
+border-right: 1px solid var(–border);
+display: flex;
+flex-direction: column;
+}
+
+/* ── Header ── */
+header {
+background: var(–accent);
+color: #fff;
+padding: 20px 24px 18px;
+position: sticky;
+top: 0;
+z-index: 10;
+}
+
+.header-eyebrow {
+font-family: var(–mono);
+font-size: 10px;
+letter-spacing: 0.12em;
+text-transform: uppercase;
+opacity: 0.7;
+margin-bottom: 4px;
+}
+
+header h1 {
+font-size: 17px;
+font-weight: 600;
+letter-spacing: -0.01em;
+line-height: 1.3;
+}
+
+.back-btn {
+display: none;
+align-items: center;
+gap: 8px;
+background: none;
+border: none;
+color: rgba(255,255,255,0.85);
+font-family: var(–mono);
+font-size: 11px;
+letter-spacing: 0.06em;
+cursor: pointer;
+padding: 0;
+margin-bottom: 10px;
+text-transform: uppercase;
+}
+
+.back-btn:hover { color: #fff; }
+.back-btn svg { flex-shrink: 0; }
+
+/* ── Pages ── */
+.page {
+display: none;
+flex: 1;
+flex-direction: column;
+animation: fadeUp 220ms ease both;
+}
+
+.page.active { display: flex; }
+
+@keyframes fadeUp {
+from { opacity: 0; transform: translateY(10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Landing ── */
+.landing-intro {
+padding: 20px 24px 16px;
+border-bottom: 1px solid var(–border);
+}
+
+.landing-intro p {
+font-size: 13.5px;
+color: var(–text-muted);
+font-style: italic;
+line-height: 1.55;
+}
+
+.section-label {
+font-family: var(–mono);
+font-size: 10px;
+letter-spacing: 0.14em;
+text-transform: uppercase;
+color: var(–text-muted);
+padding: 16px 24px 8px;
+}
+
+/* ── Checklist ── */
+.checklist {
+padding: 0 16px 8px;
+display: flex;
+flex-direction: column;
+gap: 4px;
+}
+
+.check-item {
+display: flex;
+align-items: flex-start;
+gap: 12px;
+padding: 12px 12px;
+border-radius: var(–radius);
+cursor: pointer;
+border: 1px solid transparent;
+transition: var(–transition);
+position: relative;
+}
+
+.check-item:hover {
+background: var(–accent-light);
+border-color: #B8D8C5;
+}
+
+.check-item:hover .item-arrow { opacity: 1; transform: translateX(0); }
+
+.check-box {
+width: 18px;
+height: 18px;
+border: 1.5px solid var(–border);
+border-radius: 3px;
+flex-shrink: 0;
+margin-top: 2px;
+background: #fff;
+}
+
+.check-item-text {
+flex: 1;
+font-size: 14px;
+line-height: 1.5;
+}
+
+.item-arrow {
+font-size: 12px;
+color: var(–accent);
+opacity: 0;
+transform: translateX(-4px);
+transition: var(–transition);
+flex-shrink: 0;
+margin-top: 3px;
+}
+
+/* ── Green Zone ── */
+.zone-block {
+margin: 12px 16px;
+padding: 14px 16px;
+border-radius: var(–radius);
+border-left: 3px solid;
+}
+
+.zone-block.green {
+background: var(–accent-light);
+border-color: var(–accent);
+}
+
+.zone-block.red {
+background: var(–warn-light);
+border-color: var(–warn);
+}
+
+.zone-label {
+font-family: var(–mono);
+font-size: 10px;
+letter-spacing: 0.14em;
+text-transform: uppercase;
+margin-bottom: 6px;
+font-weight: 500;
+}
+
+.zone-block.green .zone-label { color: var(–accent); }
+.zone-block.red .zone-label { color: var(–warn); }
+
+.zone-block p {
+font-size: 13.5px;
+line-height: 1.55;
+}
+
+.zone-block .zone-item {
+display: flex;
+align-items: flex-start;
+gap: 10px;
+padding: 6px 0;
+border-bottom: 1px solid rgba(0,0,0,0.06);
+cursor: pointer;
+border-radius: 3px;
+transition: var(–transition);
+}
+
+.zone-block .zone-item:last-child { border-bottom: none; }
+
+.zone-block.red .zone-item:hover { background: rgba(122,59,30,0.06); }
+.zone-block.green .zone-item:hover { background: rgba(26,92,58,0.06); }
+
+.zone-item-text { flex: 1; font-size: 13.5px; line-height: 1.5; padding: 0 6px; }
+.zone-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 8px; }
+.green .zone-dot { background: var(–accent); }
+.red .zone-dot { background: var(–warn); }
+.zone-item-arrow { font-size: 11px; color: var(–text-muted); margin-top: 5px; opacity: 0.4; transition: var(–transition); }
+.zone-item:hover .zone-item-arrow { opacity: 1; }
+
+.smartphrase-tag {
+display: inline-block;
+font-family: var(–mono);
+font-size: 11px;
+background: rgba(26,92,58,0.12);
+color: var(–accent);
+padding: 2px 8px;
+border-radius: 3px;
+margin-top: 8px;
+}
+
+/* ── Context Strip ── */
+.context-strip {
+margin: 8px 16px 16px;
+padding: 12px 16px;
+border: 1px solid var(–border);
+border-radius: var(–radius);
+background: #fff;
+}
+
+.context-strip .cs-label {
+font-family: var(–mono);
+font-size: 10px;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+color: var(–text-muted);
+margin-bottom: 6px;
+}
+
+.context-strip p {
+font-size: 13px;
+color: var(–text-muted);
+line-height: 1.55;
+font-style: italic;
+}
+
+.footer-note {
+padding: 16px 24px;
+border-top: 1px solid var(–border);
+font-size: 12px;
+color: var(–text-muted);
+font-style: italic;
+line-height: 1.5;
+text-align: center;
+}
+
+/* ── FAQ Page ── */
+.faq-header {
+padding: 16px 24px 14px;
+border-bottom: 1px solid var(–border);
+}
+
+.faq-topic {
+font-family: var(–mono);
+font-size: 10px;
+letter-spacing: 0.12em;
+text-transform: uppercase;
+color: var(–text-muted);
+margin-bottom: 5px;
+}
+
+.faq-title {
+font-size: 16px;
+font-weight: 600;
+line-height: 1.35;
+}
+
+.faq-list {
+padding: 8px 0;
+flex: 1;
+}
+
+.faq-item {
+border-bottom: 1px solid var(–border);
+}
+
+.faq-q {
+padding: 14px 24px;
+font-size: 14px;
+font-weight: 500;
+cursor: pointer;
+display: flex;
+justify-content: space-between;
+align-items: flex-start;
+gap: 12px;
+transition: background var(–transition);
+}
+
+.faq-q:hover { background: var(–accent-light); }
+
+.faq-chevron {
+font-size: 12px;
+color: var(–text-muted);
+flex-shrink: 0;
+margin-top: 3px;
+transition: transform var(–transition);
+}
+
+.faq-item.open .faq-chevron { transform: rotate(180deg); }
+
+.faq-a {
+display: none;
+padding: 0 24px 16px;
+font-size: 13.5px;
+line-height: 1.65;
+color: var(–text-muted);
+border-left: 2px solid var(–accent-light);
+margin-left: 24px;
+margin-right: 24px;
+margin-bottom: 4px;
+}
+
+.faq-item.open .faq-a { display: block; }
+
+.faq-a p { margin-bottom: 10px; }
+.faq-a p:last-child { margin-bottom: 0; }
+
+.faq-a strong { color: var(–text); font-weight: 500; }
+
+.faq-a .pill {
+display: inline-block;
+font-family: var(–mono);
+font-size: 11px;
+padding: 2px 8px;
+border-radius: 3px;
+margin: 2px 2px;
+}
+
+.pill.green { background: var(–accent-light); color: var(–accent); }
+.pill.warn { background: var(–warn-light); color: var(–warn); }
+.pill.neutral { background: #EDEAE3; color: var(–text-muted); }
+
+/* Scrollable content area */
+.scroll-area {
+flex: 1;
+overflow-y: auto;
+-webkit-overflow-scrolling: touch;
+}
+
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <header id="main-header">
+    <button class="back-btn" id="back-btn" onclick="goHome()">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back to reference
+    </button>
+    <div class="header-eyebrow">Meridian · Controlled Substances Reference</div>
+    <h1 id="header-title">ADHD Stimulants — Inherited Patient</h1>
+  </header>
+
+  <!-- ══════════════════════════════════════════════
+       PAGE: LANDING
+  ══════════════════════════════════════════════ -->
+
+  <div class="page active scroll-area" id="page-home">
+
+```
+<div class="landing-intro">
+  <p>A new or transitioning patient is on stimulant medication. Use this checklist to determine whether to continue, document, or escalate. Tap any item for guidance.</p>
+</div>
+
+<div class="section-label">Before you decide — verify all four</div>
+
+<div class="checklist">
+  <div class="check-item" onclick="goFAQ('pdmp')">
+    <div class="check-box"></div>
+    <div class="check-item-text">PDMP reviewed — no concerning pattern</div>
+    <div class="item-arrow">›</div>
+  </div>
+  <div class="check-item" onclick="goFAQ('sud')">
+    <div class="check-box"></div>
+    <div class="check-item-text">No active substance use disorder (or documented awareness &amp; plan)</div>
+    <div class="item-arrow">›</div>
+  </div>
+  <div class="check-item" onclick="goFAQ('efficacy')">
+    <div class="check-box"></div>
+    <div class="check-item-text">Medication appears effective — patient functional, no recent dose escalation requests</div>
+    <div class="item-arrow">›</div>
+  </div>
+  <div class="check-item" onclick="goFAQ('early-fills')">
+    <div class="check-box"></div>
+    <div class="check-item-text">No early fill requests in the past 12 months</div>
+    <div class="item-arrow">›</div>
+  </div>
+</div>
+
+<div class="zone-block green">
+  <div class="zone-label">✓ All boxes checked — Continue</div>
+  <p>Continue current regimen. Document using SmartPhrase below. <strong>You are institutionally supported.</strong></p>
+  <div class="smartphrase-tag">SmartPhrase: .CSADHD-CONT</div>
+</div>
+
+<div class="section-label">Escalate to psychiatry e-consult if any apply</div>
+
+<div class="zone-block red">
+  <div class="zone-label">⚠ Escalation indicators</div>
+  <div class="zone-item" onclick="goFAQ('dx-vibes')">
+    <div class="zone-dot"></div>
+    <div class="zone-item-text">Diagnosis based on self-report alone — no prior formal workup documented</div>
+    <div class="zone-item-arrow">›</div>
+  </div>
+  <div class="zone-item" onclick="goFAQ('ceiling-dose')">
+    <div class="zone-dot"></div>
+    <div class="zone-item-text">Dose at or near ceiling, or recently escalated without documented clinical rationale</div>
+    <div class="zone-item-arrow">›</div>
+  </div>
+  <div class="zone-item" onclick="goFAQ('functional')">
+    <div class="zone-dot"></div>
+    <div class="zone-item-text">Functional decline or behavioral red flags despite medication</div>
+    <div class="zone-item-arrow">›</div>
+  </div>
+  <div class="zone-item" onclick="goFAQ('combo-stim')">
+    <div class="zone-dot"></div>
+    <div class="zone-item-text">Patient requesting combination stimulants or multi-agent regimen</div>
+    <div class="zone-item-arrow">›</div>
+  </div>
+</div>
+
+<div class="context-strip">
+  <div class="cs-label">National context</div>
+  <p>Primary care providers across the US manage a meaningful proportion of adult ADHD stimulant prescriptions. You are not an outlier for inheriting these patients. The question is not whether to manage — it is how to manage safely.</p>
+</div>
+
+<div class="footer-note">
+  This is a viable first pathway, not the only pathway. Experienced providers retain clinical discretion. This framework provides institutional backing when followed.
+</div>
+```
+
+  </div><!-- /page-home -->
+
+  <!-- ══════════════════════════════════════════════
+       PAGE: FAQ — PDMP
+  ══════════════════════════════════════════════ -->
+
+  <div class="page scroll-area" id="page-pdmp">
+    <div class="faq-header">
+      <div class="faq-topic">PDMP Review</div>
+      <div class="faq-title">What counts as a "concerning pattern"?</div>
+    </div>
+    <div class="faq-list">
+
+```
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFAQ(this)">
+      How often should I check the PDMP? <span class="faq-chevron">▾</span>
+    </div>
+    <div class="faq-a">
+      <p>At minimum, check at the first appointment with a new-to-you patient and at every controlled substance renewal thereafter. Quarterly checks at prescription renewal visits are a reasonable standard for stable patients.</p>
+      <p>New York State requires PDMP review prior to prescribing controlled substances. This is a legal obligation, not a preference.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFAQ(this)">
+      What specifically am I looking for? <span class="faq-chevron">▾</span>
+    </div>
+    <div class="faq-a">
+      <p><strong>Red flags that warrant pause before prescribing:</strong></p>
+      <p><span class="pill warn">Multiple prescribers</span> — stimulants from more than one provider in the past 12 months without clear documented coordination.</p>
+      <p><span class="pill warn">Multiple pharmacies</span> — controlled substances filled at 3+ pharmacies without a clear geographic or insurance reason.</p>
+      <p><span class="pill warn">Concurrent opiates</span> — stimulants plus opioids without documented pain management rationale.</p>
+      <p><span class="pill warn">Dose mismatch</span> — quantity dispensed doesn't match what any single prescriber would authorize (suggests supplemental sourcing).</p>
+      <p><span class="pill green">Reassuring pattern</span> — same prescriber, same pharmacy, consistent quantity, no gaps suggesting diversion, no overlapping controlled substances.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFAQ(this)">
+      I see something concerning. What do I do? <span class="faq-chevron">▾</span>
+    </div>
+    <div class="faq-a">
+      <p>Do not prescribe at this visit. Have a direct, non-accusatory conversation with the patient: <em>"I'm seeing some things in the prescription history I want to understand before we go further."</em></p>
+      <p>Document exactly what you found and what the patient told you. This is protective for you and the institution regardless of what you decide next.</p>
+      <p>If the concern is significant, this is an appropriate trigger for an e-consult to psychiatry with the specific question of <strong>safe prescribing plan</strong> rather than routine review.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFAQ(this)">
+      The prior provider didn't document any PDMP checks. Does that mean I'm starting over? <span class="faq-chevron">▾</span>
+    </div>
+    <div class="faq-a">
+      <p>Yes — when you become the prescriber of record, the documentation obligation transfers to you. The prior provider's omission is their liability, not yours, but it does mean your first check is essential before issuing your first prescription.</p>
+      <p>Think of it as a brief triage at the first handoff appointment. It takes under two minutes and is your best protection.</p>
+    </div>
+  </div>
+
+</div>
+```
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       PAGE: FAQ — SUD
+  ══════════════════════════════════════════════ -->
+
+  <div class="page scroll-area" id="page-sud">
+    <div class="faq-header">
+      <div class="faq-topic">Substance Use History</div>
+      <div class="faq-title">What if there's a substance use disorder in the history?</div>
+    </div>
+    <div class="faq-list">
+
+```
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFAQ(this)">
+      The patient has a past SUD. Is that a dealbreaker? <span class="faq-chevron">▾</span>
+    </div>
+    <div class="faq-a">
+      <p>Not automatically — but it shifts the burden of documentation significantly. A patient in sustained, well-documented remission who has been stable on stimulants for years is a different clinical picture than a patient with active use.</p>
+      <p>The key question: is the current prescription part of a coordinated plan, or did it evolve informally without the SUD history being factored in?</p>
+      <p>If there's no documented awareness of the SUD history in the prior prescribing record, this is a case for psychiatry e-consult — not to decide whether to continue, but to have a documented expert review in the chart.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFAQ(this)">
+      What does "documented awareness and plan" look like? <span class="faq-chevron">▾</span>
+    </div>
+    <div class="faq-a">
+      <p>At minimum: a note that the provider is aware of the SUD history, has considered it in the prescribing decision, and has a monitoring plan. This can be brief.</p>
+      <p>Example language: <em>"Patient has history of [SUD], currently in remission x [timeframe]. Stimulant therapy reviewed in this context. Continued with close monitoring including PDMP review at each renewal and urine drug screen [frequency]."</em></p>
+      <p>SmartPhrase <span class="pill neutral">.CSADHD-SUD-AWARE</span> covers this documentation.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFAQ(this)">
+      The patient currently uses cannabis. Does that count? <span class="faq-chevron">▾</span>
+    </div>
+    <div class="faq-a">
+      <p>Cannabis use alone does not automatically disqualify a patient from stimulant continuation, but it should be documented and acknowledged. The concern is whether cannabis use represents a broader pattern of substance use that increases misuse risk.</p>
+      <p>Heavy or problematic cannabis use warrants the same documentation escalation as any other SUD history. Occasional use in a stable, well-functioning patient is a clinical judgment call — document your reasoning either way.</p>
+    </div>
+  </div>
+
+</div>
+```
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       PAGE: FAQ — EFFICACY
+  ══════════════════════════════════════════════ -->
+
+  <div class="page scroll-area" id="page-efficacy">
+    <div class="faq-header">
+      <div class="faq-topic">Treatment Effectiveness</div>
+      <div class="faq-title">How do I assess whether the medication is actually working?</div>
+    </div>
+    <div class="faq-list">
+
+```
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFAQ(this)">
+      I'm inheriting the patient — I never saw them before treatment. How can I judge efficacy? <span class="faq-chevron">▾</span>
+    </div>
+    <div class="faq-a">
+      <p>You're assessing current functional status, not comparing to a baseline you never witnessed. Ask directly: <em>"How are things going at work / school / home? Are you managing the things you were struggling with before medication?"</em></p>
+      <p>If the patient can describe specific, credible improvements in function — and there's no evidence of dose escalation, misuse, or new concerns — that's a reasonable basis for continuation.</p>
+      <p>You're not re-validating the original diagnosis. You're verifying that an ongoing prescription is doing what it's supposed to do.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFAQ(this)">
+      The patient says it's working but I'm not sure I believe them. <span class="faq-chevron">▾</span>
+    </div>
+    <div class="faq-a">
+      <p>This is a clinical judgment call that doesn't have a bright-line answer. A few considerations:</p>
+      <p>Is there corroboration? Prior notes from a previous provider, a therapist, a partner or employer? Even a prior rating scale in the chart?</p>
+      <p>Are there behavioral inconsistencies? Does the patient's presentation, history, or PDMP pattern suggest misuse or diversion rather than treatment?</p>
+      <p>If your clinical instinct is firing and you can't articulate why you're comfortable, that's the moment to pause, document, and consider an e-consult. That consult is not punitive — it's you doing exactly what the framework asks.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFAQ(this)">
+      Should I be using a rating scale at follow-up visits? <span class="faq-chevron">▾</span>
+    </div>
+    <div class="faq-a">
+      <p>Formal rating scales (Adult ADHD Self-Report Scale, Conners Adult ADHD Rating Scale) are better suited to initial evaluation and are not expected at every follow-up for established patients.</p>
+      <p>Brief structured questions — functional domains, side effects, adherence — are sufficient and documentable for ongoing management. The goal is a consistent, reproducible assessment, not a diagnostic workup at every visit.</p>
+    </div>
+  </div>
+
+</div>
+```
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       PAGE: FAQ — EARLY FILLS
+  ══════════════════════════════════════════════ -->
+
+  <div class="page scroll-area" id="page-early-fills">
+    <div class="faq-header">
+      <div class="faq-topic">Fill Patterns</div>
+      <div class="faq-title">Early fill requests — what's the threshold?</div>
+    </div>
+    <div class="faq-list">
+
+```
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFAQ(this)">
+      How early is "too early"? <span class="faq-chevron">▾</span>
+    </div>
+    <div class="faq-a">
+      <p>A single request more than 5 days early is worth a conversation. A pattern of requests more than 5 days early across multiple fill cycles is a red flag warranting documentation and possible escalation.</p>
+      <p>Context matters: a patient who ran out early once because of a vacation schedule is different from a patient who consistently fills 10 days early over 12 months.</p>
+      <p><span class="pill warn">Pattern ≥ 2 early fills in 12 months</span> — document, address directly with patient, consider urine drug screen.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFAQ(this)">
+      Can I fill early for travel or vacation? <span class="faq-chevron">▾</span>
+    </div>
+    <div class="faq-a">
+      <p>New York State Schedule II controlled substances (most stimulants) cannot be post-dated or filled early beyond the state dispensing window, regardless of reason. Patients traveling internationally should plan ahead with their prescribing provider well in advance — this is not something that can be resolved at the last minute.</p>
+      <p>For domestic travel, most pharmacies can fill within a few days of the allowed window. Counsel patients to plan accordingly.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFAQ(this)">
+      The patient says they lost the medication. What do I do? <span class="faq-chevron">▾</span>
+    </div>
+    <div class="faq-a">
+      <p>Lost or stolen Schedule II controlled substances are not replaced as a matter of policy. This is both a regulatory constraint and a risk management position.</p>
+      <p>Communicate this clearly and without apology: <em>"I understand this is frustrating. Unfortunately, Schedule II medications can't be replaced in these circumstances — this is a regulatory requirement, not a decision I'm making about you personally."</em></p>
+      <p>Document the report, check the PDMP, and note the conversation. A single loss event is not necessarily disqualifying for continued prescribing, but it should be in the chart.</p>
+    </div>
+  </div>
+
+</div>
+```
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       PAGE: FAQ — DIAGNOSIS / VIBES
+  ══════════════════════════════════════════════ -->
+
+  <div class="page scroll-area" id="page-dx-vibes">
+    <div class="faq-header">
+      <div class="faq-topic">Diagnostic Basis</div>
+      <div class="faq-title">The prior diagnosis looks thin. Now what?</div>
+    </div>
+    <div class="faq-list">
+
+```
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFAQ(this)">
+      The chart has an ADHD diagnosis but no workup. Am I on the hook for that? <span class="faq-chevron">▾</span>
+    </div>
+    <div class="faq-a">
+      <p>You are not responsible for the prior diagnostic process, but you are responsible for decisions made from this point forward. Continuing a prescription is a clinical decision — meaning it's yours, and it should be defensible.</p>
+      <p>The question isn't "was this diagnosis legitimate?" It's "do I have enough information to comfortably continue this medication?" If the answer is no, the e-consult pathway exists precisely for this situation.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFAQ(this)">
+      What does a "formal workup" actually mean? Is neuropsychological testing required? <span class="faq-chevron">▾</span>
+    </div>
+    <div class="faq-a">
+      <p>Neuropsychological testing is not required for an ADHD diagnosis and is not the standard of care in most clinical settings. A reasonable workup includes:</p>
+      <p>A validated rating scale (e.g., Adult ADHD Self-Report Scale) completed by the patient. A structured clinical interview addressing symptom onset, duration, and functional impairment across settings. Consideration of differential diagnoses — anxiety, mood disorders, sleep disorders, and thyroid disease can all mimic ADHD.</p>
+      <p>If none of this is in the chart, that's thin — but it's a very common chart. The e-consult purpose here is to get a psychiatrist's eyes on the case so you have expert documentation in the record. It changes the risk profile for both of you.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFAQ(this)">
+      The patient is stable, functional, and has been on the medication for 5 years. Does the shaky diagnosis still matter? <span class="faq-chevron">▾</span>
+    </div>
+    <div class="faq-a">
+      <p>Clinically, a 5-year stable course with demonstrated functional benefit is meaningful evidence in its own right. The medication is clearly doing something for this person.</p>
+      <p>That said, "doing something" doesn't always mean treating ADHD — stimulants improve focus and executive function across many conditions and in some people without a formal diagnosis. The diagnostic question remains open.</p>
+      <p>For practical purposes: a long-stable patient with no red flags and a thin chart is a lower priority for formal re-evaluation than a recent diagnosis, a request to escalate dose, or emerging behavioral concerns. Use clinical judgment on triage order.</p>
+    </div>
+  </div>
+
+</div>
+```
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       PAGE: FAQ — CEILING DOSE
+  ══════════════════════════════════════════════ -->
+
+  <div class="page scroll-area" id="page-ceiling-dose">
+    <div class="faq-header">
+      <div class="faq-topic">Dose Management</div>
+      <div class="faq-title">Ceiling doses and recent escalations</div>
+    </div>
+    <div class="faq-list">
+
+```
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFAQ(this)">
+      What are the ceiling doses for common stimulants? <span class="faq-chevron">▾</span>
+    </div>
+    <div class="faq-a">
+      <p><span class="pill neutral">Amphetamine salts (Adderall)</span> — FDA max 60 mg/day for adults. Doses above 40 mg/day in primary care warrant documentation of rationale.</p>
+      <p><span class="pill neutral">Methylphenidate (Ritalin, Concerta)</span> — FDA max 60 mg/day. Extended-release formulations vary by product; check prescribing information.</p>
+      <p><span class="pill neutral">Lisdexamfetamine (Vyvanse)</span> — FDA max 70 mg/day. This is a hard ceiling due to the prodrug formulation.</p>
+      <p>Doses above FDA maximum are outside this framework and require specialist co-management.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFAQ(this)">
+      The patient was escalated to max dose by the prior provider. Do I continue? <span class="faq-chevron">▾</span>
+    </div>
+    <div class="faq-a">
+      <p>Continuing a maximum-dose prescription is within primary care scope if it's clinically justified and documented. The burden of documentation is higher at the ceiling than at moderate doses.</p>
+      <p>At first visit: review the chart for the rationale behind escalation. If it's documented and coherent — continue with your own documented review.</p>
+      <p>If there's no documented rationale for the ceiling dose — or if the escalation happened recently and rapidly — this is an e-consult trigger. The question for psychiatry: <em>"Patient is at maximum dose of [medication] without clear documented rationale. Please review current plan and advise whether to maintain, taper, or restructure."</em></p>
+    </div>
+  </div>
+
+</div>
+```
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       PAGE: FAQ — FUNCTIONAL DECLINE
+  ══════════════════════════════════════════════ -->
+
+  <div class="page scroll-area" id="page-functional">
+    <div class="faq-header">
+      <div class="faq-topic">Functional Concerns</div>
+      <div class="faq-title">When function declines despite medication</div>
+    </div>
+    <div class="faq-list">
+
+```
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFAQ(this)">
+      What counts as a "behavioral red flag"? <span class="faq-chevron">▾</span>
+    </div>
+    <div class="faq-a">
+      <p>Behavioral red flags in this context are signs that the medication may be causing harm, being misused, or masking an underlying condition that's worsening:</p>
+      <p><span class="pill warn">Mood instability</span> — new or worsening irritability, emotional dysregulation, or rage that the patient or family attributes to medication timing.</p>
+      <p><span class="pill warn">Sleep severe enough to impair function</span> — beyond expected stimulant effect, especially if the patient is escalating to cope.</p>
+      <p><span class="pill warn">Cardiovascular symptoms</span> — palpitations, chest pain, or significant blood pressure elevation at current dose.</p>
+      <p><span class="pill warn">Increasing psychological dependence</span> — patient describes inability to function at all without the medication in ways that feel qualitatively different from therapeutic benefit.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFAQ(this)">
+      Could this be something other than ADHD at this point? <span class="faq-chavron">▾</span>
+    </div>
+    <div class="faq-a">
+      <p>Yes — and this is one of Dr. Batson's core concerns about the diagnostic rigor of many adult ADHD diagnoses. Anxiety disorders, bipolar disorder (particularly type II), and PTSD all significantly overlap with ADHD symptom profiles.</p>
+      <p>Stimulants can worsen anxiety, destabilize mood in bipolar disorder, and in some cases worsen trauma-related hyperarousal. If a patient is deteriorating on stimulants, these are worth considering.</p>
+      <p>This doesn't mean stopping the medication unilaterally — it means this patient needs psychiatric input, and the e-consult should frame that question explicitly.</p>
+    </div>
+  </div>
+
+</div>
+```
+
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       PAGE: FAQ — COMBO STIMULANTS
+  ══════════════════════════════════════════════ -->
+
+  <div class="page scroll-area" id="page-combo-stim">
+    <div class="faq-header">
+      <div class="faq-topic">Multi-Agent Requests</div>
+      <div class="faq-title">Patient requesting combination or second stimulant</div>
+    </div>
+    <div class="faq-list">
+
+```
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFAQ(this)">
+      Is combination stimulant therapy ever appropriate? <span class="faq-chevron">▾</span>
+    </div>
+    <div class="faq-a">
+      <p>Combination stimulant therapy (e.g., long-acting amphetamine plus short-acting methylphenidate) exists in clinical practice, particularly in severe ADHD managed by specialists. It is outside the scope of primary care initiation and requires specialist documentation.</p>
+      <p>If a patient arrives already on a multi-agent regimen, this is a situation where the e-consult precedes any continuation decision — not to refuse, but to have expert sign-off in the chart before you own this prescription.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFAQ(this)">
+      The patient is asking me to add a booster dose to their existing medication. <span class="faq-chevron">▾</span>
+    </div>
+    <div class="faq-a">
+      <p>Adding a short-acting "booster" to a long-acting regimen is common in specialist practice and not inherently inappropriate. But initiating this in primary care without specialist guidance or documentation is high-exposure territory.</p>
+      <p>The conversation with the patient: <em>"That's a reasonable clinical question. I want to make sure we approach it the right way, which means getting a psychiatry review before we add anything new to your regimen. I'm not saying no — I'm saying let's do this properly."</em></p>
+      <p>This is precisely the e-consult scenario: patient-requested escalation requiring specialist input before action.</p>
+    </div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q" onclick="toggleFAQ(this)">
+      The patient had a booster dose prescribed before and wants to restart it. <span class="faq-chevron">▾</span>
+    </div>
+    <div class="faq-a">
+      <p>Restarting a previously prescribed regimen is lower risk than initiating something new, especially if it's documented in prior records. The PDMP will show whether this was previously dispensed.</p>
+      <p>If the prior prescribing record shows the combination was used, was safe, and was discontinued for a non-clinical reason (e.g., provider left the practice), continuation with documentation is defensible.</p>
+      <p>If you're not comfortable, the e-consult is always available. That's not a failure — that's the framework doing its job.</p>
+    </div>
+  </div>
+
+</div>
+```
+
+  </div>
+
+</div><!-- /shell -->
+
+<script>
+  const pages = {
+    'pdmp': 'page-pdmp',
+    'sud': 'page-sud',
+    'efficacy': 'page-efficacy',
+    'early-fills': 'page-early-fills',
+    'dx-vibes': 'page-dx-vibes',
+    'ceiling-dose': 'page-ceiling-dose',
+    'functional': 'page-functional',
+    'combo-stim': 'page-combo-stim',
+  };
+
+  const pageTitles = {
+    'pdmp': 'PDMP Review',
+    'sud': 'Substance Use History',
+    'efficacy': 'Treatment Effectiveness',
+    'early-fills': 'Fill Patterns',
+    'dx-vibes': 'Diagnostic Basis',
+    'ceiling-dose': 'Dose Management',
+    'functional': 'Functional Concerns',
+    'combo-stim': 'Multi-Agent Requests',
+  };
+
+  function goFAQ(key) {
+    document.getElementById('page-home').classList.remove('active');
+    document.getElementById(pages[key]).classList.add('active');
+    document.getElementById('back-btn').style.display = 'flex';
+    document.getElementById('header-title').textContent = pageTitles[key];
+    window.scrollTo(0, 0);
+  }
+
+  function goHome() {
+    Object.values(pages).forEach(id => {
+      document.getElementById(id).classList.remove('active');
+    });
+    document.getElementById('page-home').classList.add('active');
+    document.getElementById('back-btn').style.display = 'none';
+    document.getElementById('header-title').textContent = 'ADHD Stimulants — Inherited Patient';
+    window.scrollTo(0, 0);
+  }
+
+  function toggleFAQ(el) {
+    const item = el.parentElement;
+    item.classList.toggle('open');
+  }
+</script>
+
+</body>
+</html>
