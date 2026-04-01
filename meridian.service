@@ -1,0 +1,13 @@
+[Unit]
+Description=Meridian Web Server
+After=network.target tailscaled.service
+
+[Service]
+Type=simple
+User=noahs
+WorkingDirectory=/home/noahs/meridian
+ExecStart=/usr/bin/python3 /home/noahs/meridian/server.py
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
