@@ -3686,6 +3686,34 @@ text-align: center;
       + '&body=' + encodeURIComponent(body);
   }
 
+  function parentPrefix(el) {
+    // Walk up to the .page container this element lives in
+    var page = el.closest('.page');
+    if (!page) return '';
+    var pageId = page.id;
+    // Check every module to see if this page is a detail page linked from a home item
+    var modKeys = Object.keys(modules);
+    for (var m = 0; m < modKeys.length; m++) {
+      var mod = modules[modKeys[m]];
+      var pagesMap = mod.pages;
+      var keys = Object.keys(pagesMap);
+      for (var k = 0; k < keys.length; k++) {
+        if (pagesMap[keys[k]] === pageId) {
+          // Found the key — now find the landing-page item with onclick="goFAQ('key')"
+          var home = document.getElementById(mod.homeId);
+          if (!home) return '';
+          var linker = home.querySelector('[onclick="goFAQ(\'' + keys[k] + '\')"]');
+          if (!linker) return '';
+          var textEl = linker.querySelector('.check-item-text') || linker.querySelector('.zone-item-text');
+          if (!textEl) return '';
+          var words = textEl.textContent.trim().split(/\s+/);
+          return words.slice(0, 5).join(' ') + ' > ';
+        }
+      }
+    }
+    return '';
+  }
+
   function createFeedbackBtn(itemText) {
     var btn = document.createElement('button');
     btn.className = 'feedback-btn';
@@ -3723,7 +3751,8 @@ text-align: center;
       var chevron = faqQs[i].querySelector('.faq-chevron');
       var qText = faqQs[i].textContent.replace(/[\u25BE\u25B4]/g, '').trim();
       if (chevron) {
-        faqQs[i].insertBefore(createFeedbackBtn(qText), chevron);
+        var prefix = parentPrefix(faqQs[i]);
+        faqQs[i].insertBefore(createFeedbackBtn(prefix + qText), chevron);
       }
     }
   }
