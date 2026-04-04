@@ -190,11 +190,24 @@ flex-shrink: 0;
 }
 
 /* ── Module Tabs ── */
-.module-tabs {
-display: flex;
+.module-tabs-wrapper {
+position: relative;
 margin: 0 -24px;
 border-top: 1px solid rgba(255,255,255,0.15);
+}
+
+.module-tabs {
+display: flex;
+overflow-x: auto;
+overflow-y: hidden;
+-webkit-overflow-scrolling: touch;
+scrollbar-width: none;
+-ms-overflow-style: none;
 min-height: 0;
+}
+
+.module-tabs::-webkit-scrollbar {
+display: none;
 }
 
 .module-tabs:empty {
@@ -202,7 +215,7 @@ display: none;
 }
 
 .module-tab {
-flex: 0 1 auto;
+flex: 0 0 auto;
 padding: 8px 10px;
 font-family: var(--mono, 'IBM Plex Mono', monospace);
 font-size: 10px;
@@ -214,7 +227,7 @@ background: none;
 border: none;
 border-bottom: 2px solid transparent;
 cursor: pointer;
-transition: var(--transition, 240ms cubic-bezier(0.4, 0, 0.2, 1));
+transition: color var(--transition, 240ms cubic-bezier(0.4, 0, 0.2, 1)), border-color var(--transition);
 display: flex;
 align-items: center;
 gap: 5px;
@@ -242,6 +255,33 @@ opacity: 0.6;
 .module-tab-close:hover {
 opacity: 1 !important;
 }
+
+/* Scroll fade hints */
+.module-tabs-wrapper::before,
+.module-tabs-wrapper::after {
+content: '';
+position: absolute;
+top: 0;
+bottom: 0;
+width: 24px;
+pointer-events: none;
+z-index: 1;
+opacity: 0;
+transition: opacity 200ms ease;
+}
+
+.module-tabs-wrapper::before {
+left: 0;
+background: linear-gradient(to right, var(--accent, #1A5C3A) 0%, transparent 100%);
+}
+
+.module-tabs-wrapper::after {
+right: 0;
+background: linear-gradient(to left, var(--accent, #1A5C3A) 0%, transparent 100%);
+}
+
+.module-tabs-wrapper.scroll-left::before { opacity: 1; }
+.module-tabs-wrapper.scroll-right::after { opacity: 1; }
 
 /* ── Pages ── */
 .page {
@@ -1564,7 +1604,8 @@ font-style: italic;
              onfocus="showSearchResults()" oninput="filterModules(this.value)">
       <div class="module-search-results" id="module-search-results"></div>
     </div>
-    <div class="module-tabs" id="module-tabs">
+    <div class="module-tabs-wrapper" id="module-tabs-wrapper">
+      <div class="module-tabs" id="module-tabs"></div>
     </div>
   </header>
 
@@ -1808,8 +1849,9 @@ font-style: italic;
       moduleData[loaded[i].module_id] = loaded[i];
     }
 
-    // Set up search blur handler
+    // Set up search blur handler and tab scrolling
     document.getElementById('module-search').addEventListener('blur', hideSearchResults);
+    initTabScroll();
 
     // Open first module
     openTab(moduleOrder[0]);
@@ -1853,6 +1895,61 @@ font-style: italic;
 
       tabsEl.appendChild(btn);
     }
+    setTimeout(updateTabFades, 50);
+  }
+
+  // ── Tab Scrolling ──
+  function initTabScroll() {
+    var tabs = document.getElementById('module-tabs');
+    var wrapper = document.getElementById('module-tabs-wrapper');
+    var isDragging = false;
+    var startX = 0;
+    var scrollStart = 0;
+
+    // Mouse drag
+    tabs.addEventListener('mousedown', function(e) {
+      // Don't interfere with close button clicks
+      if (e.target.closest('.module-tab-close')) return;
+      isDragging = true;
+      startX = e.pageX;
+      scrollStart = tabs.scrollLeft;
+      tabs.style.cursor = 'grabbing';
+      e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', function(e) {
+      if (!isDragging) return;
+      tabs.scrollLeft = scrollStart - (e.pageX - startX);
+    });
+
+    document.addEventListener('mouseup', function() {
+      if (isDragging) {
+        isDragging = false;
+        tabs.style.cursor = '';
+      }
+    });
+
+    // Update fade hints on scroll
+    tabs.addEventListener('scroll', updateTabFades);
+    window.addEventListener('resize', updateTabFades);
+  }
+
+  function updateTabFades() {
+    var tabs = document.getElementById('module-tabs');
+    var wrapper = document.getElementById('module-tabs-wrapper');
+    if (!tabs || !wrapper) return;
+    var scrollLeft = tabs.scrollLeft;
+    var scrollRight = tabs.scrollWidth - tabs.clientWidth - scrollLeft;
+    wrapper.classList.toggle('scroll-left', scrollLeft > 4);
+    wrapper.classList.toggle('scroll-right', scrollRight > 4);
+  }
+
+  function scrollActiveTabIntoView() {
+    var active = document.querySelector('.module-tab.active');
+    if (active) {
+      active.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      setTimeout(updateTabFades, 300);
+    }
   }
 
   function openTab(modId) {
@@ -1871,6 +1968,7 @@ font-style: italic;
     ensureModuleRendered(modId);
     renderTabs();
     switchModule(modId);
+    scrollActiveTabIntoView();
   }
 
   function closeTab(modId) {
@@ -2160,7 +2258,7 @@ font-style: italic;
     collabOpen = false;
     document.getElementById('info-btn').classList.remove('active');
     document.getElementById('module-search-row').style.display = '';
-    document.querySelector('.module-tabs').style.display = 'flex';
+    document.getElementById('module-tabs-wrapper').style.display = '';
     document.getElementById('view-toggle-row').style.display = 'flex';
     var meta = getModuleMeta(mod);
     hideAllPages();
@@ -2213,7 +2311,7 @@ font-style: italic;
       collabOpen = false;
       infoBtn.classList.remove('active');
       document.getElementById('module-search-row').style.display = '';
-      document.querySelector('.module-tabs').style.display = 'flex';
+      document.getElementById('module-tabs-wrapper').style.display = '';
       switchModule(previousModule);
     } else {
       previousModule = currentModule;
@@ -2225,7 +2323,7 @@ font-style: italic;
       document.getElementById('back-btn').style.display = 'none';
       document.getElementById('header-title').textContent = 'How Meridian Gets Better';
       document.getElementById('module-search-row').style.display = 'none';
-      document.querySelector('.module-tabs').style.display = 'none';
+      document.getElementById('module-tabs-wrapper').style.display = 'none';
       document.getElementById('view-toggle-row').style.display = 'none';
       var tabs = document.querySelectorAll('.module-tab');
       for (var i = 0; i < tabs.length; i++) {
