@@ -1,0 +1,297 @@
+{
+  "schema_version": "1.0.0",
+  "module_id": "benzos",
+  "default_title": "Benzodiazepines — Inherited Patient",
+  "landing_intro": "A patient is transferring to your panel on a chronic benzodiazepine regimen. This is among the most clinically and emotionally charged handoffs in primary care. Benzodiazepine-dependent patients have often been on these medications for years, frequently have no memory of why they were started, and are acutely sensitive to any suggestion of change. Your job at the first visit is not to taper. It is to assess, document, establish trust, and determine the appropriate pathway forward. Abrupt discontinuation of chronic benzodiazepines causes withdrawal seizure and death — this is never the first move.",
+  "checklist_section_label": "Before you decide — verify all four",
+  "checklist": [
+    {
+      "item_id": "benzos-pdmp",
+      "position": 1,
+      "statement": "PDMP reviewed — single prescriber, single pharmacy, consistent quantities, no concurrent opiates or other CNS depressants of concern",
+      "faq_ref": "benzos-pdmp"
+    },
+    {
+      "item_id": "benzos-indication",
+      "position": 2,
+      "statement": "Documented indication on file or established at this visit — anxiety disorder, panic disorder, seizure disorder, alcohol withdrawal, or other documented rationale",
+      "faq_ref": "benzos-indication"
+    },
+    {
+      "item_id": "benzos-duration",
+      "position": 3,
+      "statement": "Duration of use and original prescribing context understood — short-term initiation vs. long-term chronic use",
+      "faq_ref": "benzos-duration"
+    },
+    {
+      "item_id": "benzos-function",
+      "position": 4,
+      "statement": "Current functional status assessed — patient able to describe daily activities, employment, relationships, and driving without significant impairment attributable to medication",
+      "faq_ref": "benzos-function"
+    }
+  ],
+  "green_zone": {
+    "zone_label": "All boxes checked — Continue with documented plan",
+    "narrative_html": "Reasonable basis to continue current regimen at this visit. Document indication, duration, dose, and monitoring plan using SmartPhrase below. Establish that the long-term goal is the lowest effective dose. This is not a taper conversation today — it is a foundation visit. <strong>You are institutionally supported.</strong>",
+    "smartphrase": ".BENZO-CONT"
+  },
+  "escalation_section_label": "Escalate if any apply",
+  "escalation": [
+    {
+      "item_id": "benzos-combo-opiate",
+      "position": 1,
+      "statement": "Concurrent opiate prescription — any dose, any indication — this is your highest-priority safety flag",
+      "faq_ref": "benzos-combo-opiate"
+    },
+    {
+      "item_id": "benzos-highdose",
+      "position": 2,
+      "statement": "Dose above equivalent of diazepam 40 mg/day without documented psychiatric specialist involvement",
+      "faq_ref": "benzos-highdose"
+    },
+    {
+      "item_id": "benzos-combo-other",
+      "position": 3,
+      "statement": "Concurrent prescription of another CNS depressant — sedating antihistamines, muscle relaxants, gabapentin, or Z-drugs",
+      "faq_ref": "benzos-combo-other"
+    },
+    {
+      "item_id": "benzos-no-indication",
+      "position": 4,
+      "statement": "No documentable psychiatric or neurological indication — medication appears continued without clinical rationale",
+      "faq_ref": "benzos-no-indication"
+    },
+    {
+      "item_id": "benzos-cognitive",
+      "position": 5,
+      "statement": "Cognitive concerns, fall history, or age ≥ 65 — benzodiazepines are Beers Criteria medications in older adults",
+      "faq_ref": "benzos-cognitive"
+    },
+    {
+      "item_id": "benzos-escalation",
+      "position": 6,
+      "statement": "Patient requesting dose increases, early refills, or reporting the medication \"stopped working\"",
+      "faq_ref": "benzos-escalation"
+    }
+  ],
+  "context_strip": null,
+  "footer_note": "For internal use only. This is a viable first pathway, not the only pathway. Experienced providers retain clinical discretion. Benzodiazepine discontinuation without a structured taper plan is never appropriate in physically dependent patients.",
+  "faqs": [
+    {
+      "faq_id": "benzos-pdmp",
+      "topic": "PDMP Review",
+      "title": "PDMP patterns specific to benzodiazepine patients",
+      "referenced_by": [
+        "benzos-pdmp"
+      ],
+      "items": [
+        {
+          "question": "What am I specifically looking for beyond the standard PDMP review?",
+          "answer_html": "<p>For benzodiazepine patients the critical flags are: concurrent opiate prescriptions (see escalation section — this is the most dangerous combination in outpatient prescribing), Z-drug co-prescriptions (zolpidem plus a benzodiazepine doubles CNS depression risk), fills from multiple prescribers without documented coordination, and quantities that exceed what a single prescriber's regimen would generate.</p>\n<p>Also look for recent ER visits — patients in benzo withdrawal or toxicity frequently present to emergency departments and this may appear in shared records but not the PDMP itself.</p>"
+        },
+        {
+          "question": "The patient is getting benzos from a psychiatrist and wants me to continue prescribing as well. Is that appropriate?",
+          "answer_html": "<p>No — benzodiazepines should have a single prescriber. If a psychiatrist is managing the underlying indication, the psychiatrist should own the prescription. If the patient is transitioning care and the psychiatrist is no longer involved, document the gap and initiate a warm handoff or e-consult before you assume the prescription.</p>\n<p>Two providers co-prescribing the same controlled substance class without explicit coordination is a liability for both and a safety risk for the patient.</p>"
+        },
+        {
+          "question": "How often is PDMP review required for benzo patients in New York?",
+          "answer_html": "<p>New York State requires PDMP review prior to every Schedule IV controlled substance prescription. Benzodiazepines are Schedule IV. This is a legal requirement at every prescribing encounter, not just at intake.</p>"
+        }
+      ]
+    },
+    {
+      "faq_id": "benzos-indication",
+      "topic": "Documented Indication",
+      "title": "Establishing why this medication was started",
+      "referenced_by": [
+        "benzos-indication"
+      ],
+      "items": [
+        {
+          "question": "The chart has no documented indication. The patient just says they've been on it \"forever.\" What do I do?",
+          "answer_html": "<p>This is extremely common and does not by itself require you to stop prescribing. Your task is to establish an indication going forward — even if the original rationale is lost to history.</p>\n<p>Conduct a brief structured assessment at this visit: What symptoms does the medication treat? What happens when doses are missed? Is there an underlying anxiety disorder, panic disorder, or other condition that a proper diagnosis would capture? Document your clinical impression as the current indication. If no legitimate indication can be established, this is an e-consult trigger — not a reason to stop today.</p>"
+        },
+        {
+          "question": "The original indication was insomnia. Is that a supportable long-term indication?",
+          "answer_html": "<p>No — benzodiazepines are not indicated for chronic insomnia management and are not approved for this use long-term. If insomnia is the only documented indication, the patient likely has physical dependence without an ongoing therapeutic justification.</p>\n<p>This does not mean immediate taper — it means the e-consult framing is <em>\"patient on chronic benzodiazepine for insomnia indication, no psychiatric diagnosis on file, please advise on taper planning and alternative management.\"</em> CBT-I (cognitive behavioral therapy for insomnia) is the evidence-based first-line treatment and can be initiated in parallel.</p>"
+        },
+        {
+          "question": "What about anxiety that has never been formally diagnosed?",
+          "answer_html": "<p>Anxiety disorders are among the most underdiagnosed conditions in primary care. A patient who has been on a benzodiazepine for years for \"nerves\" or \"stress\" may have an untreated anxiety disorder that was managed symptomatically rather than definitively.</p>\n<p>Administering a GAD-7 at this visit takes four minutes and gives you a documented baseline. If the score is significant, you now have a diagnosis, a severity measure, and a rationale for the medication — as well as a basis for discussing whether an SSRI or SNRI plus therapy would be a more appropriate long-term approach.</p>"
+        }
+      ]
+    },
+    {
+      "faq_id": "benzos-duration",
+      "topic": "Duration of Use",
+      "title": "Short-term vs. long-term — why it matters clinically",
+      "referenced_by": [
+        "benzos-duration"
+      ],
+      "items": [
+        {
+          "question": "At what point does benzodiazepine use become \"long-term\"?",
+          "answer_html": "<p>Physical dependence can develop within 4–6 weeks of daily use. Any patient using a benzodiazepine daily for more than 4 weeks should be considered potentially physically dependent and managed accordingly — meaning no abrupt discontinuation under any circumstances.</p>\n<p>Duration beyond 6 months with daily use represents established dependence in most patients regardless of dose.</p>"
+        },
+        {
+          "question": "The patient has been on this for 10 years. Is taper even realistic?",
+          "answer_html": "<p>Yes, but the timeline is long and the process requires patient partnership. A decade of daily benzodiazepine use is not resolved over weeks or months — a successful taper may take one to two years using a structured protocol (typically a diazepam conversion with gradual reduction).</p>\n<p>The first visit is not the moment to introduce this. The first visit is the moment to establish trust, complete the assessment, and plant a seed: <em>\"My goal over time is to make sure you're on the lowest dose that keeps you functional and safe. We're not changing anything today, but I want that to be our shared direction.\"</em> Document this framing.</p>"
+        },
+        {
+          "question": "Should I convert the patient to diazepam for easier taper management?",
+          "answer_html": "<p>Diazepam conversion is a taper strategy, not a first-visit intervention. Its advantage is a long half-life that allows for smoother reduction with less interdose withdrawal.</p>\n<p>This conversion is appropriate to plan in coordination with psychiatry e-consult, not to initiate unilaterally at a handoff visit. Document it as a future goal if relevant.</p>"
+        }
+      ]
+    },
+    {
+      "faq_id": "benzos-function",
+      "topic": "Functional Assessment",
+      "title": "Assessing daily function on chronic benzodiazepines",
+      "referenced_by": [
+        "benzos-function"
+      ],
+      "items": [
+        {
+          "question": "What am I actually assessing when I ask about function?",
+          "answer_html": "<p>You are looking for evidence that the medication is providing net benefit versus harm at the current dose.</p>\n<p><span class=\"pill green\">Preserved function</span> — employed or engaged in meaningful daily activity, able to drive safely, maintaining relationships, no falls in the past 12 months, no memory complaints beyond baseline.</p>\n<p><span class=\"pill warn\">Functional impairment</span> — daytime sedation affecting work or safety, falls or near-falls, cognitive complaints, social withdrawal, inability to function without the medication at all (beyond expected physical dependence).</p>"
+        },
+        {
+          "question": "The patient drives and is on a high-dose benzodiazepine. What are my obligations?",
+          "answer_html": "<p>Benzodiazepines impair driving — this is well-established and dose-dependent. You have a clinical obligation to counsel the patient about impaired driving risk and document that you did so.</p>\n<p>In New York, physicians do not have a mandatory reporting obligation for medication-impaired drivers equivalent to seizure disorders, but the documentation of your counseling is your protection. If the patient is in a safety-sensitive occupation (commercial driver, healthcare worker, heavy machinery operator), this requires explicit conversation and documentation.</p>"
+        },
+        {
+          "question": "The patient says they can't function without it. How do I respond to that?",
+          "answer_html": "<p>Take it seriously — they are likely correct that they cannot function without it in the short term, because physical dependence is real. Validate this: <em>\"I believe you, and I'm not suggesting you stop taking it. What I want to understand is whether the medication is helping you live the life you want, or whether it has become something you need just to feel normal.\"</em></p>\n<p>This distinction — therapeutic benefit versus dependence maintenance — is the clinical and ethical core of the long-term benzo management question.</p>"
+        }
+      ]
+    },
+    {
+      "faq_id": "benzos-combo-opiate",
+      "topic": "Opiate-Benzo Combination",
+      "title": "The combination that cannot be inherited unchanged",
+      "referenced_by": [
+        "benzos-combo-opiate"
+      ],
+      "items": [
+        {
+          "question": "I've inherited a patient on both. What is my first move?",
+          "answer_html": "<p>Do not prescribe both at this visit without a safety plan in place. This is the single highest-risk combination in outpatient prescribing — the FDA black box warning is unambiguous.</p>\n<p>At this visit: assess which medication is primary (which indication is more severe, which has been in place longer), prescribe whichever is more immediately necessary with a one-time bridge supply if needed, prescribe naloxone and counsel the patient and household on administration, and initiate urgent e-consults to the appropriate specialists — psychiatry for the benzo indication, pain management for the opiate, or a combined consult if available.</p>"
+        },
+        {
+          "question": "The patient has been on both for years with no adverse events. Doesn't that suggest it's safe for them specifically?",
+          "answer_html": "<p>No adverse event to date is not the same as safe. The combination increases overdose mortality risk regardless of individual tolerance. The absence of prior harm reflects probability, not immunity — and the probability of harm increases with duration of combined exposure.</p>\n<p><em>\"They've been fine so far\"</em> is not a documentable clinical rationale for continuing a black-box combination without specialist input.</p>"
+        },
+        {
+          "question": "Who owns the taper — me, psychiatry, or pain management?",
+          "answer_html": "<p>The taper of a patient on both opiates and benzodiazepines requires coordination between providers. As the PCP you own the care coordination — you do not necessarily own the execution of both tapers.</p>\n<p>The general principle is to taper one at a time, slowly, with the higher-risk agent (usually the benzodiazepine in terms of seizure risk) addressed with specialist guidance. The e-consult is not a hand-off — you remain the primary care provider. It is a request for a specific plan.</p>"
+        }
+      ]
+    },
+    {
+      "faq_id": "benzos-highdose",
+      "topic": "High Dose Threshold",
+      "title": "Above diazepam 40 mg equivalent — thresholds and conversions",
+      "referenced_by": [
+        "benzos-highdose"
+      ],
+      "items": [
+        {
+          "question": "How do I convert my patient's medication to diazepam equivalents?",
+          "answer_html": "<p><strong>Common benzodiazepine to diazepam equivalents (approximate):</strong></p>\n<p><span class=\"pill neutral\">Diazepam 5 mg</span> = reference standard</p>\n<p><span class=\"pill neutral\">Alprazolam (Xanax) 0.5 mg</span> ≈ diazepam 5 mg (alprazolam 2 mg/day = diazepam 20 mg equivalent)</p>\n<p><span class=\"pill neutral\">Lorazepam (Ativan) 1 mg</span> ≈ diazepam 10 mg (lorazepam 4 mg/day = diazepam 40 mg equivalent)</p>\n<p><span class=\"pill neutral\">Clonazepam (Klonopin) 0.5 mg</span> ≈ diazepam 10 mg (clonazepam 2 mg/day = diazepam 40 mg equivalent)</p>\n<p><span class=\"pill neutral\">Temazepam 10 mg</span> ≈ diazepam 10 mg</p>\n<p>Calculate total daily diazepam equivalent before assessing dose category.</p>"
+        },
+        {
+          "question": "My patient is on alprazolam 2 mg TID. Is that high dose?",
+          "answer_html": "<p>Yes. Alprazolam 2 mg TID = 6 mg/day alprazolam = approximately diazepam 60 mg equivalent — well above the 40 mg threshold. Alprazolam is additionally concerning because of its short half-life, which produces significant interdose withdrawal and makes it one of the most difficult benzodiazepines to taper.</p>\n<p>This patient needs psychiatry e-consult before you continue prescribing at this dose. Document the equivalent calculation in the chart.</p>"
+        },
+        {
+          "question": "Can I continue at high dose while awaiting the e-consult?",
+          "answer_html": "<p>Yes — do not reduce or discontinue while the consult is pending. Prescribe one month at the current dose, document your awareness of the dose threshold, document that specialist input is pending, and schedule a follow-up for shortly after the expected consult response.</p>\n<p>Institutional support applies when you are actively working the framework.</p>"
+        }
+      ]
+    },
+    {
+      "faq_id": "benzos-combo-other",
+      "topic": "CNS Depressant Combinations",
+      "title": "Other sedating medications — the cumulative burden",
+      "referenced_by": [
+        "benzos-combo-other"
+      ],
+      "items": [
+        {
+          "question": "Why is gabapentin specifically flagged?",
+          "answer_html": "<p>Gabapentin and pregabalin have sedating and respiratory depressant properties that are potentiated by benzodiazepines. The combination has been increasingly associated with overdose deaths, particularly in patients with underlying respiratory disease or concurrent opiate use.</p>\n<p>The FDA added a warning on this combination in 2019. A patient on a benzodiazepine plus gabapentin plus an opiate is in the highest risk tier regardless of individual doses.</p>"
+        },
+        {
+          "question": "My patient takes zolpidem for sleep and a benzodiazepine for anxiety. Is that a problem?",
+          "answer_html": "<p>Yes — Z-drugs (zolpidem, eszopiclone, zaleplon) act on the same GABA-A receptors as benzodiazepines and produce additive CNS depression. This combination is explicitly flagged in Beers Criteria and FDA guidance.</p>\n<p>At this visit: document the combination, counsel the patient on the risk, and identify which agent is primary. CBT-I is the appropriate long-term intervention for the insomnia component. Eliminating the Z-drug is generally lower risk than addressing the benzodiazepine first.</p>"
+        },
+        {
+          "question": "The patient is also on a muscle relaxant prescribed by orthopedics. What do I do?",
+          "answer_html": "<p>Contact the prescribing provider. Concurrent benzodiazepine and muscle relaxant prescribing (cyclobenzaprine, methocarbamol, carisoprodol) represents a polypharmacy CNS depressant burden that requires coordination.</p>\n<p><span class=\"pill warn\">Carisoprodol (Soma)</span> is particularly high-risk — it is metabolized to meprobamate, a barbiturate-like compound with significant abuse potential. Document your communication with the orthopedic provider and the agreed plan.</p>"
+        }
+      ]
+    },
+    {
+      "faq_id": "benzos-no-indication",
+      "topic": "No Documentable Indication",
+      "title": "When there is no clinical reason on file",
+      "referenced_by": [
+        "benzos-no-indication"
+      ],
+      "items": [
+        {
+          "question": "The medication has been prescribed for years but I cannot find any psychiatric or neurological indication. What are my options?",
+          "answer_html": "<p>Three pathways:</p>\n<p>(1) Establish an indication at this visit through clinical assessment — administer GAD-7, PHQ-9, ask about panic attacks, take a sleep history. If a condition is present, diagnose and document it.</p>\n<p>(2) If no indication can be established and the patient is physically dependent, e-consult to psychiatry with the explicit question: <em>\"Patient on chronic benzodiazepine without documentable indication. Please advise on taper planning and whether any psychiatric diagnosis is present.\"</em></p>\n<p>(3) If the patient declines evaluation and insists on continuation without any clinical basis, document the conversation, document your clinical assessment, and make a reasoned decision about whether you can continue prescribing — knowing that \"no indication\" is a significant documentation liability.</p>"
+        },
+        {
+          "question": "Can I just write \"anxiety\" as the indication to have something in the chart?",
+          "answer_html": "<p>No — documenting a diagnosis you have not clinically assessed is not a solution and creates its own liability. If anxiety is present, assess it properly and document your assessment. If it is not present, do not fabricate it.</p>\n<p>The four-minute GAD-7 exists precisely so that this question has a documented answer.</p>"
+        }
+      ]
+    },
+    {
+      "faq_id": "benzos-cognitive",
+      "topic": "Age and Cognitive Risk",
+      "title": "Benzodiazepines in older adults and patients with cognitive concerns",
+      "referenced_by": [
+        "benzos-cognitive"
+      ],
+      "items": [
+        {
+          "question": "Why are benzodiazepines specifically problematic in patients ≥ 65?",
+          "answer_html": "<p>Multiple converging risks: falls and hip fractures (benzodiazepines impair balance, reaction time, and depth perception), cognitive impairment (both acute confusion and potential long-term dementia risk with chronic use), paradoxical agitation in some older patients, and prolonged half-life of many agents in older adults due to reduced hepatic metabolism.</p>\n<p>The American Geriatrics Society Beers Criteria explicitly lists all benzodiazepines as potentially inappropriate in adults ≥ 65 regardless of indication.</p>"
+        },
+        {
+          "question": "My 72-year-old patient has been on lorazepam for 15 years and says it's the only thing that helps her sleep. Do I taper her?",
+          "answer_html": "<p>This is one of the most delicate scenarios in primary care. A 15-year history of daily use in a 72-year-old represents profound physical dependence, and taper carries real risks including withdrawal seizure and severe anxiety.</p>\n<p>The answer is not to continue unchanged and not to taper abruptly — it is to have an honest, unhurried conversation, document the risks of both continuation and taper, involve the patient in the decision, and obtain psychiatry e-consult for a guided taper plan if the patient is willing. For patients who are clearly not candidates for taper given age, functional status, and risk-benefit calculation, documenting that reasoning explicitly is a defensible position.</p>"
+        },
+        {
+          "question": "A patient with mild cognitive impairment is on a benzodiazepine. Should I be worried about causality?",
+          "answer_html": "<p>Yes — chronic benzodiazepine use is associated with accelerated cognitive decline and may be contributing to or causing the impairment. This does not mean the medication caused the dementia, but it is a modifiable risk factor that should be addressed.</p>\n<p>Involve neurology or geriatrics if the cognitive picture is complex. Document that the association has been considered.</p>"
+        }
+      ]
+    },
+    {
+      "faq_id": "benzos-escalation",
+      "topic": "Dose Escalation Requests",
+      "title": "When the patient says it stopped working",
+      "referenced_by": [
+        "benzos-escalation"
+      ],
+      "items": [
+        {
+          "question": "The patient says their current dose no longer controls their anxiety. They're asking for more. What do I do?",
+          "answer_html": "<p>Tolerance to the anxiolytic effect of benzodiazepines is expected with chronic use — this is pharmacology, not failure. The appropriate response is not to increase the dose.</p>\n<p>The appropriate response is: <em>\"What you're describing is something that happens with long-term use of this medication — it becomes less effective over time. The answer isn't more of the same medication; it's finding an approach that works better long-term.\"</em> This is the moment to introduce SSRIs, SNRIs, buspirone, or therapy as alternatives — not as replacements to be implemented today, but as a direction of travel. Document the conversation and initiate e-consult to psychiatry for transition planning.</p>"
+        },
+        {
+          "question": "Is dose escalation ever appropriate?",
+          "answer_html": "<p>In primary care, for chronic anxiety management, dose escalation of an established benzodiazepine regimen is almost never the right answer and should not occur without psychiatry input. There are narrow exceptions — acute situational escalation for a defined procedure or crisis — but these are time-limited and do not represent chronic dose increases.</p>\n<p>If a patient's anxiety is inadequately controlled on their current regimen, the clinical question is whether the underlying condition is being managed appropriately, not whether the benzodiazepine dose should be higher.</p>"
+        },
+        {
+          "question": "The patient threatens to go elsewhere if I won't increase the dose. How do I handle this?",
+          "answer_html": "<p>With clarity and without apology: <em>\"I understand you're frustrated, and I want to help you feel better. I'm not able to increase this medication — that's a clinical decision, not a personal one. What I can do is work with you on finding something that addresses the underlying anxiety more effectively.\"</em></p>\n<p>Document the request, your response, and the patient's reaction. A patient who leaves the practice over a refusal to escalate a benzodiazepine dose has self-selected out of a framework that was designed to protect them.</p>"
+        }
+      ]
+    }
+  ]
+}

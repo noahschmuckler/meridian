@@ -1,0 +1,244 @@
+{
+  "schema_version": "1.0.0",
+  "module_id": "adhd",
+  "default_title": "ADHD Stimulants — Inherited Patient",
+  "landing_intro": "A new or transitioning patient is on stimulant medication. Use this checklist to determine whether to continue, document, or escalate. Tap any item for guidance.",
+  "checklist_section_label": "Before you decide — verify all four",
+  "checklist": [
+    {
+      "item_id": "pdmp",
+      "position": 1,
+      "statement": "PDMP reviewed — no concerning pattern",
+      "faq_ref": "pdmp"
+    },
+    {
+      "item_id": "sud",
+      "position": 2,
+      "statement": "No active substance use disorder (or documented awareness & plan)",
+      "faq_ref": "sud"
+    },
+    {
+      "item_id": "efficacy",
+      "position": 3,
+      "statement": "Medication appears effective — patient functional, no recent dose escalation requests",
+      "faq_ref": "efficacy"
+    },
+    {
+      "item_id": "early-fills",
+      "position": 4,
+      "statement": "No early fill requests in the past 12 months",
+      "faq_ref": "early-fills"
+    }
+  ],
+  "green_zone": {
+    "zone_label": "All boxes checked — Continue",
+    "narrative_html": "Continue current regimen. Document using SmartPhrase below. <strong>You are institutionally supported.</strong>",
+    "smartphrase": ".CSADHD-CONT"
+  },
+  "escalation_section_label": "Escalate to psychiatry e-consult if any apply",
+  "escalation": [
+    {
+      "item_id": "dx-vibes",
+      "position": 1,
+      "statement": "Diagnosis based on self-report alone — no prior formal workup documented",
+      "faq_ref": "dx-vibes"
+    },
+    {
+      "item_id": "ceiling-dose",
+      "position": 2,
+      "statement": "Dose at or near ceiling, or recently escalated without documented clinical rationale",
+      "faq_ref": "ceiling-dose"
+    },
+    {
+      "item_id": "functional",
+      "position": 3,
+      "statement": "Functional decline or behavioral red flags despite medication",
+      "faq_ref": "functional"
+    },
+    {
+      "item_id": "combo-stim",
+      "position": 4,
+      "statement": "Patient requesting combination stimulants or multi-agent regimen",
+      "faq_ref": "combo-stim"
+    }
+  ],
+  "context_strip": {
+    "label": "National context",
+    "text": "Primary care providers across the US manage a meaningful proportion of adult ADHD stimulant prescriptions. You are not an outlier for inheriting these patients. The question is not whether to manage — it is how to manage safely."
+  },
+  "footer_note": "This is a viable first pathway, not the only pathway. Experienced providers retain clinical discretion. This framework provides institutional backing when followed.",
+  "faqs": [
+    {
+      "faq_id": "pdmp",
+      "topic": "PDMP Review",
+      "title": "What counts as a \"concerning pattern\"?",
+      "referenced_by": [
+        "pdmp"
+      ],
+      "items": [
+        {
+          "question": "How often should I check the PDMP?",
+          "answer_html": "<p>At minimum, check at the first appointment with a new-to-you patient and at every controlled substance renewal thereafter. Quarterly checks at prescription renewal visits are a reasonable standard for stable patients.</p>\n<p>New York State requires PDMP review prior to prescribing controlled substances. This is a legal obligation, not a preference.</p>"
+        },
+        {
+          "question": "What specifically am I looking for?",
+          "answer_html": "<p><strong>Red flags that warrant pause before prescribing:</strong></p>\n<p><span class=\"pill warn\">Multiple prescribers</span> — stimulants from more than one provider in the past 12 months without clear documented coordination.</p>\n<p><span class=\"pill warn\">Multiple pharmacies</span> — controlled substances filled at 3+ pharmacies without a clear geographic or insurance reason.</p>\n<p><span class=\"pill warn\">Concurrent opiates</span> — stimulants plus opioids without documented pain management rationale.</p>\n<p><span class=\"pill warn\">Dose mismatch</span> — quantity dispensed doesn't match what any single prescriber would authorize (suggests supplemental sourcing).</p>\n<p><span class=\"pill green\">Reassuring pattern</span> — same prescriber, same pharmacy, consistent quantity, no gaps suggesting diversion, no overlapping controlled substances.</p>"
+        },
+        {
+          "question": "I see something concerning. What do I do?",
+          "answer_html": "<p>Do not prescribe at this visit. Have a direct, non-accusatory conversation with the patient: <em>\"I'm seeing some things in the prescription history I want to understand before we go further.\"</em></p>\n<p>Document exactly what you found and what the patient told you. This is protective for you and the institution regardless of what you decide next.</p>\n<p>If the concern is significant, this is an appropriate trigger for an e-consult to psychiatry with the specific question of <strong>safe prescribing plan</strong> rather than routine review.</p>"
+        },
+        {
+          "question": "The prior provider didn't document any PDMP checks. Does that mean I'm starting over?",
+          "answer_html": "<p>Yes — when you become the prescriber of record, the documentation obligation transfers to you. The prior provider's omission is their liability, not yours, but it does mean your first check is essential before issuing your first prescription.</p>\n<p>Think of it as a brief triage at the first handoff appointment. It takes under two minutes and is your best protection.</p>"
+        }
+      ]
+    },
+    {
+      "faq_id": "sud",
+      "topic": "Substance Use History",
+      "title": "What if there's a substance use disorder in the history?",
+      "referenced_by": [
+        "sud"
+      ],
+      "items": [
+        {
+          "question": "The patient has a past SUD. Is that a dealbreaker?",
+          "answer_html": "<p>Not automatically — but it shifts the burden of documentation significantly. A patient in sustained, well-documented remission who has been stable on stimulants for years is a different clinical picture than a patient with active use.</p>\n<p>The key question: is the current prescription part of a coordinated plan, or did it evolve informally without the SUD history being factored in?</p>\n<p>If there's no documented awareness of the SUD history in the prior prescribing record, this is a case for psychiatry e-consult — not to decide whether to continue, but to have a documented expert review in the chart.</p>"
+        },
+        {
+          "question": "What does \"documented awareness and plan\" look like?",
+          "answer_html": "<p>At minimum: a note that the provider is aware of the SUD history, has considered it in the prescribing decision, and has a monitoring plan. This can be brief.</p>\n<p>Example language: <em>\"Patient has history of [SUD], currently in remission x [timeframe]. Stimulant therapy reviewed in this context. Continued with close monitoring including PDMP review at each renewal and urine drug screen [frequency].\"</em></p>\n<p>SmartPhrase <span class=\"pill neutral\">.CSADHD-SUD-AWARE</span> covers this documentation.</p>"
+        },
+        {
+          "question": "The patient currently uses cannabis. Does that count?",
+          "answer_html": "<p>Cannabis use alone does not automatically disqualify a patient from stimulant continuation, but it should be documented and acknowledged. The concern is whether cannabis use represents a broader pattern of substance use that increases misuse risk.</p>\n<p>Heavy or problematic cannabis use warrants the same documentation escalation as any other SUD history. Occasional use in a stable, well-functioning patient is a clinical judgment call — document your reasoning either way.</p>"
+        }
+      ]
+    },
+    {
+      "faq_id": "efficacy",
+      "topic": "Treatment Effectiveness",
+      "title": "How do I assess whether the medication is actually working?",
+      "referenced_by": [
+        "efficacy"
+      ],
+      "items": [
+        {
+          "question": "I'm inheriting the patient — I never saw them before treatment. How can I judge efficacy?",
+          "answer_html": "<p>You're assessing current functional status, not comparing to a baseline you never witnessed. Ask directly: <em>\"How are things going at work / school / home? Are you managing the things you were struggling with before medication?\"</em></p>\n<p>If the patient can describe specific, credible improvements in function — and there's no evidence of dose escalation, misuse, or new concerns — that's a reasonable basis for continuation.</p>\n<p>You're not re-validating the original diagnosis. You're verifying that an ongoing prescription is doing what it's supposed to do.</p>"
+        },
+        {
+          "question": "The patient says it's working but I'm not sure I believe them.",
+          "answer_html": "<p>This is a clinical judgment call that doesn't have a bright-line answer. A few considerations:</p>\n<p>Is there corroboration? Prior notes from a previous provider, a therapist, a partner or employer? Even a prior rating scale in the chart?</p>\n<p>Are there behavioral inconsistencies? Does the patient's presentation, history, or PDMP pattern suggest misuse or diversion rather than treatment?</p>\n<p>If your clinical instinct is firing and you can't articulate why you're comfortable, that's the moment to pause, document, and consider an e-consult. That consult is not punitive — it's you doing exactly what the framework asks.</p>"
+        },
+        {
+          "question": "Should I be using a rating scale at follow-up visits?",
+          "answer_html": "<p>Formal rating scales (Adult ADHD Self-Report Scale, Conners Adult ADHD Rating Scale) are better suited to initial evaluation and are not expected at every follow-up for established patients.</p>\n<p>Brief structured questions — functional domains, side effects, adherence — are sufficient and documentable for ongoing management. The goal is a consistent, reproducible assessment, not a diagnostic workup at every visit.</p>"
+        }
+      ]
+    },
+    {
+      "faq_id": "early-fills",
+      "topic": "Fill Patterns",
+      "title": "Early fill requests — what's the threshold?",
+      "referenced_by": [
+        "early-fills"
+      ],
+      "items": [
+        {
+          "question": "How early is \"too early\"?",
+          "answer_html": "<p>A single request more than 5 days early is worth a conversation. A pattern of requests more than 5 days early across multiple fill cycles is a red flag warranting documentation and possible escalation.</p>\n<p>Context matters: a patient who ran out early once because of a vacation schedule is different from a patient who consistently fills 10 days early over 12 months.</p>\n<p><span class=\"pill warn\">Pattern: 2+ early fills in 12 months</span> — document, address directly with patient, consider urine drug screen.</p>"
+        },
+        {
+          "question": "Can I fill early for travel or vacation?",
+          "answer_html": "<p>New York State Schedule II controlled substances (most stimulants) cannot be post-dated or filled early beyond the state dispensing window, regardless of reason. Patients traveling internationally should plan ahead with their prescribing provider well in advance — this is not something that can be resolved at the last minute.</p>\n<p>For domestic travel, most pharmacies can fill within a few days of the allowed window. Counsel patients to plan accordingly.</p>"
+        },
+        {
+          "question": "The patient says they lost the medication. What do I do?",
+          "answer_html": "<p>Lost or stolen Schedule II controlled substances are not replaced as a matter of policy. This is both a regulatory constraint and a risk management position.</p>\n<p>Communicate this clearly and without apology: <em>\"I understand this is frustrating. Unfortunately, Schedule II medications can't be replaced in these circumstances — this is a regulatory requirement, not a decision I'm making about you personally.\"</em></p>\n<p>Document the report, check the PDMP, and note the conversation. A single loss event is not necessarily disqualifying for continued prescribing, but it should be in the chart.</p>"
+        }
+      ]
+    },
+    {
+      "faq_id": "dx-vibes",
+      "topic": "Diagnostic Basis",
+      "title": "The prior diagnosis looks thin. Now what?",
+      "referenced_by": [
+        "dx-vibes"
+      ],
+      "items": [
+        {
+          "question": "The chart has an ADHD diagnosis but no workup. Am I on the hook for that?",
+          "answer_html": "<p>You are not responsible for the prior diagnostic process, but you are responsible for decisions made from this point forward. Continuing a prescription is a clinical decision — meaning it's yours, and it should be defensible.</p>\n<p>The question isn't \"was this diagnosis legitimate?\" It's \"do I have enough information to comfortably continue this medication?\" If the answer is no, the e-consult pathway exists precisely for this situation.</p>"
+        },
+        {
+          "question": "What does a \"formal workup\" actually mean? Is neuropsychological testing required?",
+          "answer_html": "<p>Neuropsychological testing is not required for an ADHD diagnosis and is not the standard of care in most clinical settings. A reasonable workup includes:</p>\n<p>A validated rating scale (e.g., Adult ADHD Self-Report Scale) completed by the patient. A structured clinical interview addressing symptom onset, duration, and functional impairment across settings. Consideration of differential diagnoses — anxiety, mood disorders, sleep disorders, and thyroid disease can all mimic ADHD.</p>\n<p>If none of this is in the chart, that's thin — but it's a very common chart. The e-consult purpose here is to get a psychiatrist's eyes on the case so you have expert documentation in the record. It changes the risk profile for both of you.</p>"
+        },
+        {
+          "question": "The patient is stable, functional, and has been on the medication for 5 years. Does the shaky diagnosis still matter?",
+          "answer_html": "<p>Clinically, a 5-year stable course with demonstrated functional benefit is meaningful evidence in its own right. The medication is clearly doing something for this person.</p>\n<p>That said, \"doing something\" doesn't always mean treating ADHD — stimulants improve focus and executive function across many conditions and in some people without a formal diagnosis. The diagnostic question remains open.</p>\n<p>For practical purposes: a long-stable patient with no red flags and a thin chart is a lower priority for formal re-evaluation than a recent diagnosis, a request to escalate dose, or emerging behavioral concerns. Use clinical judgment on triage order.</p>"
+        }
+      ]
+    },
+    {
+      "faq_id": "ceiling-dose",
+      "topic": "Dose Management",
+      "title": "Ceiling doses and recent escalations",
+      "referenced_by": [
+        "ceiling-dose"
+      ],
+      "items": [
+        {
+          "question": "What are the ceiling doses for common stimulants?",
+          "answer_html": "<p><span class=\"pill neutral\">Amphetamine salts (Adderall)</span> — FDA max 60 mg/day for adults. Doses above 40 mg/day in primary care warrant documentation of rationale.</p>\n<p><span class=\"pill neutral\">Methylphenidate (Ritalin, Concerta)</span> — FDA max 60 mg/day. Extended-release formulations vary by product; check prescribing information.</p>\n<p><span class=\"pill neutral\">Lisdexamfetamine (Vyvanse)</span> — FDA max 70 mg/day. This is a hard ceiling due to the prodrug formulation.</p>\n<p>Doses above FDA maximum are outside this framework and require specialist co-management.</p>"
+        },
+        {
+          "question": "The patient was escalated to max dose by the prior provider. Do I continue?",
+          "answer_html": "<p>Continuing a maximum-dose prescription is within primary care scope if it's clinically justified and documented. The burden of documentation is higher at the ceiling than at moderate doses.</p>\n<p>At first visit: review the chart for the rationale behind escalation. If it's documented and coherent — continue with your own documented review.</p>\n<p>If there's no documented rationale for the ceiling dose — or if the escalation happened recently and rapidly — this is an e-consult trigger. The question for psychiatry: <em>\"Patient is at maximum dose of [medication] without clear documented rationale. Please review current plan and advise whether to maintain, taper, or restructure.\"</em></p>"
+        }
+      ]
+    },
+    {
+      "faq_id": "functional",
+      "topic": "Functional Concerns",
+      "title": "When function declines despite medication",
+      "referenced_by": [
+        "functional"
+      ],
+      "items": [
+        {
+          "question": "What counts as a \"behavioral red flag\"?",
+          "answer_html": "<p>Behavioral red flags in this context are signs that the medication may be causing harm, being misused, or masking an underlying condition that's worsening:</p>\n<p><span class=\"pill warn\">Mood instability</span> — new or worsening irritability, emotional dysregulation, or rage that the patient or family attributes to medication timing.</p>\n<p><span class=\"pill warn\">Sleep severe enough to impair function</span> — beyond expected stimulant effect, especially if the patient is escalating to cope.</p>\n<p><span class=\"pill warn\">Cardiovascular symptoms</span> — palpitations, chest pain, or significant blood pressure elevation at current dose.</p>\n<p><span class=\"pill warn\">Increasing psychological dependence</span> — patient describes inability to function at all without the medication in ways that feel qualitatively different from therapeutic benefit.</p>"
+        },
+        {
+          "question": "Could this be something other than ADHD at this point?",
+          "answer_html": "<p>Yes — and this is one of Dr. Batson's core concerns about the diagnostic rigor of many adult ADHD diagnoses. Anxiety disorders, bipolar disorder (particularly type II), and PTSD all significantly overlap with ADHD symptom profiles.</p>\n<p>Stimulants can worsen anxiety, destabilize mood in bipolar disorder, and in some cases worsen trauma-related hyperarousal. If a patient is deteriorating on stimulants, these are worth considering.</p>\n<p>This doesn't mean stopping the medication unilaterally — it means this patient needs psychiatric input, and the e-consult should frame that question explicitly.</p>"
+        }
+      ]
+    },
+    {
+      "faq_id": "combo-stim",
+      "topic": "Multi-Agent Requests",
+      "title": "Patient requesting combination or second stimulant",
+      "referenced_by": [
+        "combo-stim"
+      ],
+      "items": [
+        {
+          "question": "Is combination stimulant therapy ever appropriate?",
+          "answer_html": "<p>Combination stimulant therapy (e.g., long-acting amphetamine plus short-acting methylphenidate) exists in clinical practice, particularly in severe ADHD managed by specialists. It is outside the scope of primary care initiation and requires specialist documentation.</p>\n<p>If a patient arrives already on a multi-agent regimen, this is a situation where the e-consult precedes any continuation decision — not to refuse, but to have expert sign-off in the chart before you own this prescription.</p>"
+        },
+        {
+          "question": "The patient is asking me to add a booster dose to their existing medication.",
+          "answer_html": "<p>Adding a short-acting \"booster\" to a long-acting regimen is common in specialist practice and not inherently inappropriate. But initiating this in primary care without specialist guidance or documentation is high-exposure territory.</p>\n<p>The conversation with the patient: <em>\"That's a reasonable clinical question. I want to make sure we approach it the right way, which means getting a psychiatry review before we add anything new to your regimen. I'm not saying no — I'm saying let's do this properly.\"</em></p>\n<p>This is precisely the e-consult scenario: patient-requested escalation requiring specialist input before action.</p>"
+        },
+        {
+          "question": "The patient had a booster dose prescribed before and wants to restart it.",
+          "answer_html": "<p>Restarting a previously prescribed regimen is lower risk than initiating something new, especially if it's documented in prior records. The PDMP will show whether this was previously dispensed.</p>\n<p>If the prior prescribing record shows the combination was used, was safe, and was discontinued for a non-clinical reason (e.g., provider left the practice), continuation with documentation is defensible.</p>\n<p>If you're not comfortable, the e-consult is always available. That's not a failure — that's the framework doing its job.</p>"
+        }
+      ]
+    }
+  ]
+}
