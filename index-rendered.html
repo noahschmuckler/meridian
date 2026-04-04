@@ -13,6 +13,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
 <title>Meridian</title>
+<script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
 <style>
 
 :root {
@@ -2327,10 +2328,404 @@ font-style: italic;
   }
 
   function downloadPPTX() {
-    var link = document.createElement('a');
-    link.href = 'presentations/' + currentModule + '.pptx';
-    link.download = currentModule + '.pptx';
-    link.click();
+    var mod = moduleData[currentModule];
+    if (!mod) return;
+    generatePPTX(mod);
+  }
+
+  // ── Client-side PPTX Generation ──
+  var PPTX_COLORS = {
+    green: '1A5C3A',
+    greenLight: 'EAF2ED',
+    greenMid: '2D7A52',
+    greenFade: 'CCDDCC',
+    brown: '7A3B1E',
+    brownLight: 'F5EDE8',
+    textDark: '1C1A16',
+    textMuted: '6B6560',
+    bgWarm: 'F4F1EC',
+    surface: 'FDFCF9',
+    white: 'FFFFFF',
+    border: 'D6D0C4'
+  };
+  var PPTX_FONT = 'Segoe UI';
+
+  function parseAnswerHtml(html) {
+    // Parse FAQ answer HTML into formatted text runs for PptxGenJS
+    var div = document.createElement('div');
+    div.innerHTML = html;
+    var runs = [];
+    var pCount = 0;
+
+    function walk(node) {
+      if (node.nodeType === 3) { // text node
+        var text = node.textContent;
+        if (text.trim() || text === '\n') {
+          var parentTag = node.parentElement ? node.parentElement.tagName : '';
+          var classList = node.parentElement ? node.parentElement.className : '';
+          var isBold = false, isItalic = false, isPill = false, pillType = null;
+
+          // Walk up ancestors to check formatting
+          var el = node.parentElement;
+          while (el && el !== div) {
+            if (el.tagName === 'STRONG') isBold = true;
+            if (el.tagName === 'EM') isItalic = true;
+            if (el.className && el.className.indexOf('pill') >= 0) {
+              isPill = true;
+              if (el.className.indexOf('warn') >= 0) pillType = 'warn';
+              else if (el.className.indexOf('green') >= 0) pillType = 'green';
+              else pillType = 'neutral';
+            }
+            el = el.parentElement;
+          }
+
+          runs.push({ text: text, bold: isBold, italic: isItalic, pill: isPill, pillType: pillType });
+        }
+        return;
+      }
+      if (node.nodeType !== 1) return;
+      if (node.tagName === 'P') {
+        if (pCount > 0) runs.push({ text: '\n', breakBefore: true });
+        pCount++;
+      }
+      for (var i = 0; i < node.childNodes.length; i++) {
+        walk(node.childNodes[i]);
+      }
+    }
+    walk(div);
+    return runs;
+  }
+
+  function htmlToPlain(html) {
+    var div = document.createElement('div');
+    div.innerHTML = html;
+    return div.textContent || div.innerText || '';
+  }
+
+  function generatePPTX(mod) {
+    var pres = new PptxGenJS();
+    pres.defineLayout({ name: 'MERIDIAN', width: 13.333, height: 7.5 });
+    pres.layout = 'MERIDIAN';
+
+    // Build FAQ ref map
+    var faqRefMap = {};
+    for (var i = 0; i < mod.faqs.length; i++) {
+      faqRefMap[mod.faqs[i].faq_id] = 'F' + (i + 1);
+    }
+
+    buildTitleSlide(pres, mod);
+    buildChecklistSlide(pres, mod, faqRefMap);
+    buildEscalationSlide(pres, mod, faqRefMap);
+    for (var i = 0; i < mod.faqs.length; i++) {
+      buildFaqSlide(pres, mod, mod.faqs[i], 'F' + (i + 1));
+    }
+    buildFooterSlide(pres, mod);
+
+    pres.writeFile({ fileName: mod.module_id + '.pptx' });
+  }
+
+  function buildTitleSlide(pres, mod) {
+    var slide = pres.addSlide();
+    slide.background = { color: PPTX_COLORS.green };
+
+    slide.addText('MERIDIAN', {
+      x: 1, y: 1.5, w: 11, h: 0.5,
+      fontSize: 12, color: PPTX_COLORS.white, fontFace: PPTX_FONT
+    });
+
+    var parts = mod.default_title.split(' \u2014 ');
+    var title = parts.length === 2 ? parts[0] : mod.default_title;
+    var subtitle = parts.length === 2 ? parts[1] : '';
+
+    slide.addText(title, {
+      x: 1, y: 2.2, w: 11, h: 1.5,
+      fontSize: 36, color: PPTX_COLORS.white, fontFace: PPTX_FONT, bold: true
+    });
+
+    if (subtitle) {
+      slide.addText(subtitle, {
+        x: 1, y: 3.6, w: 11, h: 0.8,
+        fontSize: 20, color: PPTX_COLORS.greenFade, fontFace: PPTX_FONT, italic: true
+      });
+    }
+
+    if (mod.landing_intro) {
+      slide.addText(mod.landing_intro, {
+        x: 1, y: 4.8, w: 9, h: 1.5,
+        fontSize: 14, color: PPTX_COLORS.greenFade, fontFace: PPTX_FONT, italic: true
+      });
+    }
+
+    slide.addShape(pres.ShapeType.rect, {
+      x: 1, y: 6.8, w: 11.333, h: 0.03,
+      fill: { color: PPTX_COLORS.greenFade }
+    });
+  }
+
+  function buildChecklistSlide(pres, mod, faqRefMap) {
+    var slide = pres.addSlide();
+    slide.background = { color: PPTX_COLORS.surface };
+
+    // Header bar
+    slide.addShape(pres.ShapeType.rect, {
+      x: 0, y: 0, w: 13.333, h: 0.8,
+      fill: { color: PPTX_COLORS.green }
+    });
+    slide.addText(mod.checklist_section_label.toUpperCase(), {
+      x: 0.6, y: 0.15, w: 12, h: 0.5,
+      fontSize: 11, color: PPTX_COLORS.white, fontFace: PPTX_FONT, bold: true
+    });
+
+    // Checklist items
+    var y = 1.2;
+    for (var i = 0; i < mod.checklist.length; i++) {
+      var item = mod.checklist[i];
+      var refLabel = faqRefMap[item.faq_ref] || '';
+
+      // Checkbox outline
+      slide.addShape(pres.ShapeType.rect, {
+        x: 0.8, y: y + 0.04, w: 0.22, h: 0.22,
+        line: { color: PPTX_COLORS.border, width: 1.5 }
+      });
+
+      // Item text with ref tag
+      var textRuns = [
+        { text: item.statement, options: { fontSize: 15, color: PPTX_COLORS.textDark, fontFace: PPTX_FONT } }
+      ];
+      if (refLabel) {
+        textRuns.push({ text: '  ' + refLabel, options: { fontSize: 10, color: PPTX_COLORS.green, fontFace: PPTX_FONT, bold: true } });
+      }
+      slide.addText(textRuns, { x: 1.2, y: y, w: 9.5, h: 0.6 });
+
+      y += 0.65;
+    }
+
+    // Green zone
+    var gz = mod.green_zone;
+    if (gz) {
+      y += 0.3;
+      // Left accent bar
+      slide.addShape(pres.ShapeType.rect, {
+        x: 0.7, y: y, w: 0.06, h: 1.6,
+        fill: { color: PPTX_COLORS.green }
+      });
+      // Background
+      slide.addShape(pres.ShapeType.rect, {
+        x: 0.75, y: y, w: 10.5, h: 1.6,
+        fill: { color: PPTX_COLORS.greenLight }
+      });
+      // Zone label
+      slide.addText(gz.zone_label.toUpperCase(), {
+        x: 1.0, y: y + 0.1, w: 10, h: 0.3,
+        fontSize: 10, color: PPTX_COLORS.green, fontFace: PPTX_FONT, bold: true
+      });
+      // Narrative
+      slide.addText(htmlToPlain(gz.narrative_html), {
+        x: 1.0, y: y + 0.45, w: 10, h: 0.6,
+        fontSize: 13, color: PPTX_COLORS.textDark, fontFace: PPTX_FONT
+      });
+      // SmartPhrase
+      slide.addText('SmartPhrase: ' + gz.smartphrase, {
+        x: 1.0, y: y + 1.1, w: 4, h: 0.35,
+        fontSize: 11, color: PPTX_COLORS.green, fontFace: PPTX_FONT
+      });
+    }
+  }
+
+  function buildEscalationSlide(pres, mod, faqRefMap) {
+    var slide = pres.addSlide();
+    slide.background = { color: PPTX_COLORS.surface };
+
+    // Header bar
+    slide.addShape(pres.ShapeType.rect, {
+      x: 0, y: 0, w: 13.333, h: 0.8,
+      fill: { color: PPTX_COLORS.brown }
+    });
+    slide.addText(mod.escalation_section_label.toUpperCase(), {
+      x: 0.6, y: 0.15, w: 12, h: 0.5,
+      fontSize: 11, color: PPTX_COLORS.white, fontFace: PPTX_FONT, bold: true
+    });
+
+    var y = 1.2;
+    var itemH = mod.escalation.length <= 6 ? 0.55 : 0.48;
+    var fontSize = mod.escalation.length <= 6 ? 14 : 13;
+
+    for (var i = 0; i < mod.escalation.length; i++) {
+      var item = mod.escalation[i];
+      var refLabel = faqRefMap[item.faq_ref] || '';
+
+      // Dot
+      slide.addShape(pres.ShapeType.ellipse, {
+        x: 0.82, y: y + 0.07, w: 0.1, h: 0.1,
+        fill: { color: PPTX_COLORS.brown }
+      });
+
+      var textRuns = [
+        { text: item.statement, options: { fontSize: fontSize, color: PPTX_COLORS.textDark, fontFace: PPTX_FONT } }
+      ];
+      if (refLabel) {
+        textRuns.push({ text: '  ' + refLabel, options: { fontSize: 10, color: PPTX_COLORS.green, fontFace: PPTX_FONT, bold: true } });
+      }
+      slide.addText(textRuns, { x: 1.1, y: y, w: 10, h: 0.5 });
+
+      y += itemH;
+    }
+
+    // Context strip
+    if (mod.context_strip) {
+      y += 0.3;
+      slide.addShape(pres.ShapeType.rect, {
+        x: 0.7, y: y, w: 10.5, h: 1.0,
+        fill: { color: PPTX_COLORS.white },
+        line: { color: PPTX_COLORS.border, width: 1 }
+      });
+      slide.addText(mod.context_strip.label.toUpperCase(), {
+        x: 0.9, y: y + 0.08, w: 10, h: 0.2,
+        fontSize: 9, color: PPTX_COLORS.textMuted, fontFace: PPTX_FONT, bold: true
+      });
+      slide.addText(mod.context_strip.text, {
+        x: 0.9, y: y + 0.3, w: 10, h: 0.6,
+        fontSize: 12, color: PPTX_COLORS.textMuted, fontFace: PPTX_FONT, italic: true
+      });
+    }
+  }
+
+  function buildFaqSlide(pres, mod, faq, refLabel) {
+    var slide = pres.addSlide();
+    slide.background = { color: PPTX_COLORS.surface };
+
+    // Header bar
+    slide.addShape(pres.ShapeType.rect, {
+      x: 0, y: 0, w: 13.333, h: 1.0,
+      fill: { color: PPTX_COLORS.green }
+    });
+
+    // Ref badge
+    slide.addShape(pres.ShapeType.rect, {
+      x: 0.55, y: 0.13, w: 0.65, h: 0.35,
+      fill: { color: PPTX_COLORS.white },
+      rectRadius: 0.05
+    });
+    slide.addText(refLabel, {
+      x: 0.55, y: 0.13, w: 0.65, h: 0.35,
+      fontSize: 14, color: PPTX_COLORS.green, fontFace: PPTX_FONT, bold: true, align: 'center', valign: 'middle'
+    });
+
+    // Topic
+    slide.addText(faq.topic.toUpperCase(), {
+      x: 1.4, y: 0.12, w: 10, h: 0.3,
+      fontSize: 10, color: PPTX_COLORS.greenFade, fontFace: PPTX_FONT
+    });
+
+    // Title
+    slide.addText(faq.title, {
+      x: 1.4, y: 0.42, w: 10, h: 0.5,
+      fontSize: 18, color: PPTX_COLORS.white, fontFace: PPTX_FONT, bold: true
+    });
+
+    // Q&A pairs
+    var y = 1.3;
+    var maxY = 6.8;
+
+    for (var q = 0; q < faq.items.length; q++) {
+      var qa = faq.items[q];
+
+      if (y > maxY) {
+        // Overflow slide
+        slide = pres.addSlide();
+        slide.background = { color: PPTX_COLORS.surface };
+        slide.addShape(pres.ShapeType.rect, {
+          x: 0, y: 0, w: 13.333, h: 0.6,
+          fill: { color: PPTX_COLORS.green }
+        });
+        slide.addText(refLabel + ' \u2014 ' + faq.title + ' (continued)', {
+          x: 0.6, y: 0.1, w: 10, h: 0.4,
+          fontSize: 13, color: PPTX_COLORS.white, fontFace: PPTX_FONT, bold: true
+        });
+        y = 0.9;
+      }
+
+      // Question
+      slide.addText(qa.question, {
+        x: 0.6, y: y, w: 11.5, h: 0.45,
+        fontSize: 14, color: PPTX_COLORS.textDark, fontFace: PPTX_FONT, bold: true
+      });
+      y += 0.45;
+
+      // Answer accent bar
+      slide.addShape(pres.ShapeType.rect, {
+        x: 0.65, y: y, w: 0.035, h: 0.01,
+        fill: { color: PPTX_COLORS.greenLight }
+      });
+
+      // Answer with formatted runs
+      var runs = parseAnswerHtml(qa.answer_html);
+      var pptxRuns = [];
+      for (var r = 0; r < runs.length; r++) {
+        var run = runs[r];
+        if (run.breakBefore) {
+          pptxRuns.push({ text: '\n', options: { fontSize: 6, breakType: 'paragraph' } });
+          continue;
+        }
+        if (run.pill) {
+          var pillColor = run.pillType === 'warn' ? PPTX_COLORS.brown :
+                          run.pillType === 'green' ? PPTX_COLORS.green : PPTX_COLORS.textMuted;
+          pptxRuns.push({ text: '[' + run.text + ']', options: {
+            fontSize: 11, color: pillColor, fontFace: PPTX_FONT, bold: true
+          }});
+        } else {
+          pptxRuns.push({ text: run.text, options: {
+            fontSize: 12,
+            color: run.bold ? PPTX_COLORS.textDark : PPTX_COLORS.textMuted,
+            fontFace: PPTX_FONT,
+            bold: run.bold || false,
+            italic: run.italic || false
+          }});
+        }
+      }
+
+      if (pptxRuns.length > 0) {
+        slide.addText(pptxRuns, { x: 0.8, y: y, w: 11, h: 3, valign: 'top' });
+      }
+
+      // Estimate answer height
+      var plainText = htmlToPlain(qa.answer_html);
+      var estLines = Math.max(1, Math.floor(plainText.length / 90) + (plainText.split('\n').length - 1) + 1);
+      y += 0.25 * estLines + 0.15;
+
+      // Separator
+      if (y < maxY && q < faq.items.length - 1) {
+        slide.addShape(pres.ShapeType.rect, {
+          x: 0.8, y: y, w: 10.5, h: 0.01,
+          fill: { color: PPTX_COLORS.border }
+        });
+        y += 0.15;
+      }
+    }
+  }
+
+  function buildFooterSlide(pres, mod) {
+    var slide = pres.addSlide();
+    slide.background = { color: PPTX_COLORS.green };
+
+    slide.addText('MERIDIAN', {
+      x: 1, y: 2.5, w: 11, h: 1,
+      fontSize: 12, color: PPTX_COLORS.greenFade, fontFace: PPTX_FONT
+    });
+
+    var parts = mod.default_title.split(' \u2014 ');
+    var title = parts.length === 2 ? parts[0] : mod.default_title;
+    slide.addText(title, {
+      x: 1, y: 3.0, w: 11, h: 1,
+      fontSize: 28, color: PPTX_COLORS.white, fontFace: PPTX_FONT, bold: true
+    });
+
+    if (mod.footer_note) {
+      slide.addText(mod.footer_note, {
+        x: 1, y: 4.5, w: 9, h: 1.5,
+        fontSize: 13, color: PPTX_COLORS.greenFade, fontFace: PPTX_FONT, italic: true
+      });
+    }
   }
 
   // ── Boot ──
