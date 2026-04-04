@@ -945,6 +945,456 @@ line-height: 1.5;
 text-align: center;
 }
 
+/* ── View Mode Toggle ── */
+.view-toggle-row {
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 8px 16px;
+border-bottom: 1px solid var(--border);
+background: var(--surface);
+}
+
+.view-toggle-btn {
+font-family: var(--mono);
+font-size: 10px;
+letter-spacing: 0.08em;
+text-transform: uppercase;
+padding: 5px 12px;
+border-radius: 3px;
+border: 1px solid var(--border);
+background: none;
+color: var(--text-muted);
+cursor: pointer;
+transition: var(--transition);
+}
+
+.view-toggle-btn:hover {
+background: var(--accent-light);
+border-color: #B8D8C5;
+color: var(--text);
+}
+
+.view-toggle-btn.active {
+background: var(--accent);
+color: #fff;
+border-color: var(--accent);
+}
+
+.view-toggle-actions {
+display: flex;
+gap: 6px;
+}
+
+.pdf-btn {
+font-family: var(--mono);
+font-size: 10px;
+letter-spacing: 0.08em;
+text-transform: uppercase;
+padding: 5px 12px;
+border-radius: 3px;
+border: 1px solid var(--border);
+background: none;
+color: var(--text-muted);
+cursor: pointer;
+transition: var(--transition);
+}
+
+.pdf-btn:hover {
+background: var(--accent-light);
+border-color: #B8D8C5;
+color: var(--text);
+}
+
+/* ── Expanded Outline ── */
+.expanded-outline {
+padding: 0 0 32px;
+}
+
+.expanded-section {
+margin: 0 16px;
+border-bottom: 1px solid var(--border);
+}
+
+.expanded-section:last-child {
+border-bottom: none;
+}
+
+.expanded-section-header {
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 14px 8px;
+cursor: pointer;
+transition: background var(--transition);
+}
+
+.expanded-section-header:hover {
+background: rgba(0,0,0,0.02);
+}
+
+.expanded-section-label {
+font-family: var(--mono);
+font-size: 10px;
+letter-spacing: 0.14em;
+text-transform: uppercase;
+color: var(--text-muted);
+font-weight: 500;
+}
+
+.expanded-section-chevron {
+font-size: 12px;
+color: var(--text-muted);
+transition: transform var(--transition);
+}
+
+.expanded-section.collapsed .expanded-section-chevron {
+transform: rotate(-90deg);
+}
+
+.expanded-section.collapsed .expanded-section-body {
+display: none;
+}
+
+.expanded-section-body {
+padding: 0 8px 12px;
+}
+
+/* Expanded checklist items */
+.expanded-item {
+display: flex;
+align-items: baseline;
+gap: 10px;
+padding: 6px 0;
+font-size: 14px;
+line-height: 1.5;
+}
+
+.expanded-item-marker {
+color: var(--text-muted);
+flex-shrink: 0;
+font-size: 13px;
+}
+
+.expanded-item-text {
+flex: 1;
+}
+
+/* Superscript reference tags */
+.ref-tag {
+font-family: var(--mono);
+font-size: 9px;
+font-weight: 500;
+vertical-align: super;
+line-height: 1;
+margin-left: 3px;
+padding: 1px 4px;
+border-radius: 2px;
+cursor: pointer;
+text-decoration: none;
+transition: background var(--transition);
+}
+
+.ref-tag-f {
+color: var(--accent);
+background: var(--accent-light);
+}
+
+.ref-tag-f:hover {
+background: #d0e6d8;
+}
+
+/* Green zone in expanded */
+.expanded-green-zone {
+margin: 8px 0;
+padding: 14px 16px;
+border-radius: var(--radius);
+border-left: 3px solid var(--accent);
+background: var(--accent-light);
+}
+
+.expanded-green-zone .zone-label {
+font-family: var(--mono);
+font-size: 10px;
+letter-spacing: 0.14em;
+text-transform: uppercase;
+color: var(--accent);
+margin-bottom: 6px;
+font-weight: 500;
+}
+
+.expanded-green-zone p {
+font-size: 13.5px;
+line-height: 1.55;
+}
+
+.expanded-green-zone .smartphrase-tag {
+display: inline-block;
+font-family: var(--mono);
+font-size: 11px;
+background: rgba(26,92,58,0.12);
+color: var(--accent);
+padding: 2px 8px;
+border-radius: 3px;
+margin-top: 8px;
+}
+
+/* Escalation items in expanded */
+.expanded-escalation-item {
+display: flex;
+align-items: baseline;
+gap: 10px;
+padding: 6px 0;
+font-size: 13.5px;
+line-height: 1.5;
+}
+
+.expanded-escalation-dot {
+width: 6px;
+height: 6px;
+border-radius: 50%;
+background: var(--warn);
+flex-shrink: 0;
+margin-top: 7px;
+}
+
+/* FAQ section in expanded */
+.expanded-faq-entry {
+margin: 8px 0;
+border: 1px solid var(--border);
+border-radius: var(--radius);
+overflow: hidden;
+}
+
+.expanded-faq-entry-header {
+display: flex;
+align-items: center;
+gap: 10px;
+padding: 10px 14px;
+background: #F9F8F5;
+cursor: pointer;
+transition: background var(--transition);
+}
+
+.expanded-faq-entry-header:hover {
+background: #F0EDE6;
+}
+
+.expanded-faq-ref-badge {
+font-family: var(--mono);
+font-size: 10px;
+font-weight: 500;
+color: var(--accent);
+background: var(--accent-light);
+padding: 2px 7px;
+border-radius: 3px;
+flex-shrink: 0;
+}
+
+.expanded-faq-entry-title {
+font-size: 14px;
+font-weight: 500;
+flex: 1;
+}
+
+.expanded-faq-entry-chevron {
+font-size: 12px;
+color: var(--text-muted);
+transition: transform var(--transition);
+}
+
+.expanded-faq-entry.collapsed .expanded-faq-entry-chevron {
+transform: rotate(-90deg);
+}
+
+.expanded-faq-entry.collapsed .expanded-faq-entry-body {
+display: none;
+}
+
+.expanded-faq-entry-body {
+padding: 0 14px 14px;
+}
+
+.expanded-faq-qa {
+border-bottom: 1px solid var(--border);
+padding: 10px 0;
+}
+
+.expanded-faq-qa:last-child {
+border-bottom: none;
+}
+
+.expanded-faq-question {
+font-size: 13.5px;
+font-weight: 500;
+cursor: pointer;
+display: flex;
+justify-content: space-between;
+align-items: flex-start;
+gap: 8px;
+padding: 4px 0;
+transition: color var(--transition);
+}
+
+.expanded-faq-question:hover {
+color: var(--accent);
+}
+
+.expanded-faq-question-chevron {
+font-size: 11px;
+color: var(--text-muted);
+flex-shrink: 0;
+margin-top: 2px;
+transition: transform var(--transition);
+}
+
+.expanded-faq-qa.open .expanded-faq-question-chevron {
+transform: rotate(180deg);
+}
+
+.expanded-faq-answer {
+display: none;
+padding: 8px 0 4px;
+font-size: 13.5px;
+line-height: 1.65;
+color: var(--text-muted);
+border-left: 2px solid var(--accent-light);
+padding-left: 14px;
+margin-top: 6px;
+}
+
+.expanded-faq-qa.open .expanded-faq-answer {
+display: block;
+}
+
+.expanded-faq-answer p { margin-bottom: 10px; }
+.expanded-faq-answer p:last-child { margin-bottom: 0; }
+.expanded-faq-answer strong { color: var(--text); font-weight: 500; }
+
+.expanded-faq-answer .pill {
+display: inline-block;
+font-family: var(--mono);
+font-size: 11px;
+padding: 2px 8px;
+border-radius: 3px;
+margin: 2px 2px;
+}
+
+/* Collapse all / expand all bar */
+.outline-controls {
+display: flex;
+justify-content: flex-end;
+gap: 8px;
+padding: 8px 16px 0;
+}
+
+.outline-control-btn {
+font-family: var(--mono);
+font-size: 9px;
+letter-spacing: 0.08em;
+text-transform: uppercase;
+padding: 3px 8px;
+border-radius: 2px;
+border: 1px solid var(--border);
+background: none;
+color: var(--text-muted);
+cursor: pointer;
+transition: var(--transition);
+}
+
+.outline-control-btn:hover {
+background: var(--accent-light);
+color: var(--text);
+}
+
+/* Context strip in expanded */
+.expanded-context-strip {
+margin: 8px 0;
+padding: 12px 16px;
+border: 1px solid var(--border);
+border-radius: var(--radius);
+background: #fff;
+}
+
+.expanded-context-strip .cs-label {
+font-family: var(--mono);
+font-size: 10px;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+color: var(--text-muted);
+margin-bottom: 6px;
+}
+
+.expanded-context-strip p {
+font-size: 13px;
+color: var(--text-muted);
+line-height: 1.55;
+font-style: italic;
+}
+
+/* ── Print Styles ── */
+@media print {
+  body {
+    background: #fff;
+    font-size: 11pt;
+  }
+  .shell {
+    max-width: 100%;
+    border: none;
+    min-height: auto;
+  }
+  header, .module-tabs, .view-toggle-row, .outline-controls,
+  .back-btn, .info-btn, .feedback-btn, .clear-checks-row,
+  .pdf-btn, .view-toggle-actions {
+    display: none !important;
+  }
+  /* Show the print header instead */
+  .print-header {
+    display: block !important;
+    padding: 0 0 12pt;
+    margin-bottom: 12pt;
+    border-bottom: 2pt solid #1A5C3A;
+  }
+  .print-header-eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 8pt;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #6B6560;
+    margin-bottom: 4pt;
+  }
+  .print-header-title {
+    font-size: 16pt;
+    font-weight: 600;
+    color: #1C1A16;
+  }
+  .print-header-subtitle {
+    font-size: 10pt;
+    color: #6B6560;
+    margin-top: 2pt;
+  }
+  .page { display: none !important; }
+  .page.active { display: flex !important; }
+  .expanded-outline { padding: 0; }
+  .expanded-section { margin: 0; page-break-inside: avoid; }
+  .expanded-faq-entry { page-break-inside: avoid; }
+  /* Force expand all for print */
+  .expanded-section.collapsed .expanded-section-body { display: block !important; }
+  .expanded-faq-entry.collapsed .expanded-faq-entry-body { display: block !important; }
+  .expanded-faq-qa .expanded-faq-answer { display: block !important; }
+  .expanded-section-chevron,
+  .expanded-faq-entry-chevron,
+  .expanded-faq-question-chevron {
+    display: none !important;
+  }
+  .ref-tag { color: #1A5C3A !important; background: none !important; border: 1px solid #ccc; }
+  a { text-decoration: none; color: inherit; }
+  .footer-note { border-top: 1px solid #D6D0C4; margin-top: 12pt; }
+}
+
+/* Hide print header on screen */
+.print-header { display: none; }
+
 </style>
 </head>
 <body>
@@ -963,6 +1413,24 @@ text-align: center;
       <!-- Tabs rendered dynamically -->
     </div>
   </header>
+
+  <!-- View mode toggle -->
+  <div class="view-toggle-row" id="view-toggle-row">
+    <div>
+      <button class="view-toggle-btn active" id="btn-compact" onclick="setViewMode('compact')">Compact</button>
+      <button class="view-toggle-btn" id="btn-expanded" onclick="setViewMode('expanded')">Expanded</button>
+    </div>
+    <div class="view-toggle-actions">
+      <button class="pdf-btn" id="pdf-btn" onclick="downloadPDF()" style="display:none">Download PDF</button>
+    </div>
+  </div>
+
+  <!-- Print-only header (hidden on screen) -->
+  <div class="print-header" id="print-header">
+    <div class="print-header-eyebrow">Meridian</div>
+    <div class="print-header-title" id="print-title"></div>
+    <div class="print-header-subtitle" id="print-subtitle"></div>
+  </div>
 
   <!-- Module pages injected here by renderer -->
   <div id="module-container"></div>
@@ -1364,9 +1832,10 @@ text-align: center;
     collabOpen = false;
     document.getElementById('info-btn').classList.remove('active');
     document.querySelector('.module-tabs').style.display = 'flex';
+    document.getElementById('view-toggle-row').style.display = 'flex';
     var meta = getModuleMeta(mod);
     hideAllPages();
-    document.getElementById(meta.homeId).classList.add('active');
+    hideExpandedView();
     document.getElementById('back-btn').style.display = 'none';
     document.getElementById('header-title').textContent = meta.defaultTitle;
 
@@ -1375,7 +1844,13 @@ text-align: center;
       tabs[i].classList.remove('active');
     }
     document.getElementById('tab-' + mod).classList.add('active');
-    restoreChecks();
+
+    if (viewMode === 'expanded') {
+      showExpandedView(mod);
+    } else {
+      document.getElementById(meta.homeId).classList.add('active');
+      restoreChecks();
+    }
     window.scrollTo(0, 0);
   }
 
@@ -1414,10 +1889,12 @@ text-align: center;
       collabOpen = true;
       infoBtn.classList.add('active');
       hideAllPages();
+      hideExpandedView();
       document.getElementById('page-collab').classList.add('active');
       document.getElementById('back-btn').style.display = 'none';
       document.getElementById('header-title').textContent = 'How Meridian Gets Better';
       document.querySelector('.module-tabs').style.display = 'none';
+      document.getElementById('view-toggle-row').style.display = 'none';
       var tabs = document.querySelectorAll('.module-tab');
       for (var i = 0; i < tabs.length; i++) {
         tabs[i].classList.remove('active');
@@ -1618,6 +2095,233 @@ text-align: center;
       checklist.classList.remove('checklist-complete-' + moduleOrder[i]);
       checklist.classList.remove('checklist-animate-' + moduleOrder[i]);
     }
+  }
+
+  // ── View Mode ──
+  var viewMode = 'compact'; // 'compact' or 'expanded'
+
+  function setViewMode(mode) {
+    viewMode = mode;
+    document.getElementById('btn-compact').classList.toggle('active', mode === 'compact');
+    document.getElementById('btn-expanded').classList.toggle('active', mode === 'expanded');
+    document.getElementById('pdf-btn').style.display = mode === 'expanded' ? '' : 'none';
+
+    // Re-render current module in the new mode
+    if (currentModule) {
+      var meta = getModuleMeta(currentModule);
+      // If we're on a FAQ page in compact mode, go home first
+      hideAllPages();
+      document.getElementById('back-btn').style.display = 'none';
+      document.getElementById('header-title').textContent = meta.defaultTitle;
+
+      if (mode === 'expanded') {
+        showExpandedView(currentModule);
+      } else {
+        hideExpandedView();
+        document.getElementById(meta.homeId).classList.add('active');
+        restoreChecks();
+      }
+    }
+    window.scrollTo(0, 0);
+  }
+
+  function showExpandedView(modId) {
+    // Hide all compact pages
+    hideAllPages();
+
+    // Get or create expanded container for this module
+    var containerId = 'expanded-' + modId;
+    var container = document.getElementById(containerId);
+    if (!container) {
+      container = renderExpandedOutline(moduleData[modId]);
+      document.getElementById('module-container').appendChild(container);
+    }
+    container.classList.add('active');
+
+    // Update print header
+    var mod = moduleData[modId];
+    document.getElementById('print-title').textContent = mod.default_title;
+    document.getElementById('print-subtitle').textContent = 'Expanded Reference — ' + new Date().toLocaleDateString();
+  }
+
+  function hideExpandedView() {
+    var expanded = document.querySelectorAll('.expanded-page');
+    for (var i = 0; i < expanded.length; i++) {
+      expanded[i].classList.remove('active');
+    }
+  }
+
+  function renderExpandedOutline(mod) {
+    var id = mod.module_id;
+    var page = document.createElement('div');
+    page.className = 'page scroll-area expanded-page';
+    page.id = 'expanded-' + id;
+
+    // Build FAQ ref number map: faq_id -> F1, F2, etc.
+    var faqRefMap = {};
+    for (var i = 0; i < mod.faqs.length; i++) {
+      faqRefMap[mod.faqs[i].faq_id] = 'F' + (i + 1);
+    }
+
+    var html = '';
+
+    // Landing intro
+    html += '<div class="landing-intro"><p>' + escHtml(mod.landing_intro) + '</p></div>';
+
+    // Outline controls
+    html += '<div class="outline-controls">';
+    html += '<button class="outline-control-btn" onclick="expandAllSections(\'' + id + '\')">Expand all</button>';
+    html += '<button class="outline-control-btn" onclick="collapseAllSections(\'' + id + '\')">Collapse all</button>';
+    html += '</div>';
+
+    // ── Checklist Section ──
+    html += '<div class="expanded-section" data-section="checklist">';
+    html += '<div class="expanded-section-header" onclick="toggleSection(this)">';
+    html += '<div class="expanded-section-label">' + escHtml(mod.checklist_section_label) + '</div>';
+    html += '<span class="expanded-section-chevron">&#9662;</span>';
+    html += '</div>';
+    html += '<div class="expanded-section-body">';
+    for (var i = 0; i < mod.checklist.length; i++) {
+      var item = mod.checklist[i];
+      var refLabel = faqRefMap[item.faq_ref];
+      html += '<div class="expanded-item">';
+      html += '<span class="expanded-item-marker">&#9744;</span>';
+      html += '<span class="expanded-item-text">' + escHtml(item.statement);
+      if (refLabel) {
+        html += ' <a class="ref-tag ref-tag-f" href="#' + id + '-faq-' + item.faq_ref + '">' + refLabel + '</a>';
+      }
+      html += '</span>';
+      html += '</div>';
+    }
+    html += '</div></div>';
+
+    // ── Green Zone ──
+    if (mod.green_zone) {
+      html += '<div class="expanded-section" data-section="green-zone">';
+      html += '<div class="expanded-section-header" onclick="toggleSection(this)">';
+      html += '<div class="expanded-section-label">' + escHtml(mod.green_zone.zone_label) + '</div>';
+      html += '<span class="expanded-section-chevron">&#9662;</span>';
+      html += '</div>';
+      html += '<div class="expanded-section-body">';
+      html += '<div class="expanded-green-zone">';
+      html += '<p>' + mod.green_zone.narrative_html + '</p>';
+      html += '<div class="smartphrase-tag">SmartPhrase: ' + escHtml(mod.green_zone.smartphrase) + '</div>';
+      html += '</div>';
+      html += '</div></div>';
+    }
+
+    // ── Escalation Section ──
+    html += '<div class="expanded-section" data-section="escalation">';
+    html += '<div class="expanded-section-header" onclick="toggleSection(this)">';
+    html += '<div class="expanded-section-label">' + escHtml(mod.escalation_section_label) + '</div>';
+    html += '<span class="expanded-section-chevron">&#9662;</span>';
+    html += '</div>';
+    html += '<div class="expanded-section-body">';
+    for (var i = 0; i < mod.escalation.length; i++) {
+      var item = mod.escalation[i];
+      var refLabel = faqRefMap[item.faq_ref];
+      html += '<div class="expanded-escalation-item">';
+      html += '<span class="expanded-escalation-dot"></span>';
+      html += '<span class="expanded-item-text">' + escHtml(item.statement);
+      if (refLabel) {
+        html += ' <a class="ref-tag ref-tag-f" href="#' + id + '-faq-' + item.faq_ref + '">' + refLabel + '</a>';
+      }
+      html += '</span>';
+      html += '</div>';
+    }
+    html += '</div></div>';
+
+    // ── Context Strip (if present) ──
+    if (mod.context_strip) {
+      html += '<div class="expanded-section" data-section="context">';
+      html += '<div class="expanded-section-header" onclick="toggleSection(this)">';
+      html += '<div class="expanded-section-label">' + escHtml(mod.context_strip.label) + '</div>';
+      html += '<span class="expanded-section-chevron">&#9662;</span>';
+      html += '</div>';
+      html += '<div class="expanded-section-body">';
+      html += '<div class="expanded-context-strip">';
+      html += '<p>' + escHtml(mod.context_strip.text) + '</p>';
+      html += '</div>';
+      html += '</div></div>';
+    }
+
+    // ── FAQ Reference Section ──
+    html += '<div class="expanded-section" data-section="faqs">';
+    html += '<div class="expanded-section-header" onclick="toggleSection(this)">';
+    html += '<div class="expanded-section-label">Reference — FAQs</div>';
+    html += '<span class="expanded-section-chevron">&#9662;</span>';
+    html += '</div>';
+    html += '<div class="expanded-section-body">';
+    for (var i = 0; i < mod.faqs.length; i++) {
+      var faq = mod.faqs[i];
+      var refLabel = 'F' + (i + 1);
+      html += '<div class="expanded-faq-entry" id="' + id + '-faq-' + faq.faq_id + '">';
+      html += '<div class="expanded-faq-entry-header" onclick="toggleFaqEntry(this)">';
+      html += '<span class="expanded-faq-ref-badge">' + refLabel + '</span>';
+      html += '<span class="expanded-faq-entry-title">' + escHtml(faq.title) + '</span>';
+      html += '<span class="expanded-faq-entry-chevron">&#9662;</span>';
+      html += '</div>';
+      html += '<div class="expanded-faq-entry-body">';
+      for (var q = 0; q < faq.items.length; q++) {
+        var qa = faq.items[q];
+        html += '<div class="expanded-faq-qa">';
+        html += '<div class="expanded-faq-question" onclick="toggleExpandedQA(this)">';
+        html += '<span>' + escHtml(qa.question) + '</span>';
+        html += '<span class="expanded-faq-question-chevron">&#9662;</span>';
+        html += '</div>';
+        html += '<div class="expanded-faq-answer">' + qa.answer_html + '</div>';
+        html += '</div>';
+      }
+      html += '</div></div>';
+    }
+    html += '</div></div>';
+
+    // Footer
+    if (mod.footer_note) {
+      html += '<div class="footer-note">' + escHtml(mod.footer_note) + '</div>';
+    }
+
+    page.innerHTML = html;
+    return page;
+  }
+
+  // ── Expanded View Interactions ──
+  function toggleSection(headerEl) {
+    var section = headerEl.parentElement;
+    section.classList.toggle('collapsed');
+  }
+
+  function toggleFaqEntry(headerEl) {
+    var entry = headerEl.parentElement;
+    entry.classList.toggle('collapsed');
+  }
+
+  function toggleExpandedQA(questionEl) {
+    var qa = questionEl.parentElement;
+    qa.classList.toggle('open');
+  }
+
+  function expandAllSections(modId) {
+    var container = document.getElementById('expanded-' + modId);
+    if (!container) return;
+    var sections = container.querySelectorAll('.expanded-section, .expanded-faq-entry');
+    for (var i = 0; i < sections.length; i++) {
+      sections[i].classList.remove('collapsed');
+    }
+  }
+
+  function collapseAllSections(modId) {
+    var container = document.getElementById('expanded-' + modId);
+    if (!container) return;
+    var sections = container.querySelectorAll('.expanded-section, .expanded-faq-entry');
+    for (var i = 0; i < sections.length; i++) {
+      sections[i].classList.add('collapsed');
+    }
+  }
+
+  // ── PDF Download ──
+  function downloadPDF() {
+    window.print();
   }
 
   // ── Boot ──
