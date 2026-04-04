@@ -495,6 +495,41 @@ opacity: 1;
 /* Touch devices: always show */
 @media (hover: none) {
 .feedback-btn { opacity: 0.5; }
+.module-feedback-row .feedback-btn { opacity: 0.6; }
+}
+
+/* ── Module-Level Feedback Row ── */
+.module-feedback-row {
+display: flex;
+align-items: center;
+gap: 8px;
+padding: 8px 16px;
+border-radius: 8px;
+background: var(--surface, #FAFAF7);
+border: 1px solid var(--border, #D6D0C4);
+cursor: pointer;
+transition: background var(--transition, 240ms cubic-bezier(0.4, 0, 0.2, 1));
+}
+.module-feedback-row:hover {
+background: var(--bg, #F4F1EC);
+}
+.module-feedback-row .feedback-btn {
+display: flex;
+opacity: 0.6;
+width: 22px;
+height: 22px;
+}
+.module-feedback-row:hover .feedback-btn {
+opacity: 1;
+}
+.module-feedback-row .feedback-btn svg {
+width: 14px;
+height: 14px;
+}
+.module-feedback-row .feedback-label {
+font-size: 12px;
+color: var(--text-muted, #6B6560);
+line-height: 1.4;
 }
 
 .smartphrase-tag {
@@ -1346,7 +1381,7 @@ font-style: italic;
   }
   header, .module-tabs, .view-toggle-row, .outline-controls,
   .back-btn, .info-btn, .feedback-btn, .clear-checks-row,
-  .pdf-btn, #pptx-btn, .view-toggle-actions {
+  .pdf-btn, #pptx-btn, .view-toggle-actions, .module-feedback-row {
     display: none !important;
   }
   /* Show the print header instead */
@@ -1671,6 +1706,7 @@ font-style: italic;
 
     // Initialize
     injectFeedbackButtons();
+    injectModuleFeedbackRows();
     initCheckboxes();
     switchModule(moduleOrder[0]);
   }
@@ -1983,6 +2019,52 @@ font-style: italic;
       if (chevron) {
         var prefix = parentPrefix(faqQs[i]);
         faqQs[i].insertBefore(createFeedbackBtn(prefix + qText), chevron);
+      }
+    }
+  }
+
+  // ── Module-Level Feedback Rows ──
+  function createFeedbackRow(itemText, label) {
+    var row = document.createElement('div');
+    row.className = 'module-feedback-row';
+    var btn = createFeedbackBtn(itemText);
+    var span = document.createElement('span');
+    span.className = 'feedback-label';
+    span.textContent = label;
+    row.appendChild(btn);
+    row.appendChild(span);
+    row.addEventListener('click', function() { btn.click(); });
+    return row;
+  }
+
+  function injectModuleFeedbackRows() {
+    for (var i = 0; i < moduleOrder.length; i++) {
+      var modId = moduleOrder[i];
+      var mod = moduleData[modId];
+      var meta = getModuleMeta(modId);
+      var homePage = document.getElementById(meta.homeId);
+      if (!homePage) continue;
+
+      var moduleName = mod.default_title.split(' \u2014 ')[0].split(' — ')[0];
+
+      // Insert module-level row after landing-intro
+      var intro = homePage.querySelector('.landing-intro');
+      if (intro) {
+        var moduleRow = createFeedbackRow(
+          moduleName + ' Module (General)',
+          'Feedback on the ' + moduleName + ' module as a whole'
+        );
+        intro.parentNode.insertBefore(moduleRow, intro.nextSibling);
+      }
+
+      // Insert Meridian-wide row before footer-note
+      var footer = homePage.querySelector('.footer-note');
+      if (footer) {
+        var meridianRow = createFeedbackRow(
+          'Meridian Interface (General)',
+          'Feedback on the Meridian interface as a whole'
+        );
+        footer.parentNode.insertBefore(meridianRow, footer);
       }
     }
   }
