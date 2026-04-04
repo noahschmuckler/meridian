@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-04-04T18:37:57.057283+00:00",
+  "modules": [
+    {
+      "module_id": "adhd",
+      "title": "ADHD Stimulants",
+      "subtitle": "Inherited Patient",
+      "default_title": "ADHD Stimulants — Inherited Patient",
+      "status": "published",
+      "file": "adhd.json"
+    },
+    {
+      "module_id": "ckd",
+      "title": "CKD & Cystatin C",
+      "subtitle": "Initial Workup",
+      "default_title": "CKD & Cystatin C — Initial Workup",
+      "status": "published",
+      "file": "ckd.json"
+    },
+    {
+      "module_id": "opiates",
+      "title": "Chronic Opiates",
+      "subtitle": "Inherited Patient",
+      "default_title": "Chronic Opiates — Inherited Patient",
+      "status": "published",
+      "file": "opiates.json"
+    },
+    {
+      "module_id": "benzos",
+      "title": "Benzodiazepines",
+      "subtitle": "Inherited Patient",
+      "default_title": "Benzodiazepines — Inherited Patient",
+      "status": "published",
+      "file": "benzos.json"
+    },
+    {
+      "module_id": "anemia",
+      "title": "Anemia",
+      "subtitle": "Initial Workup Before Hematology",
+      "default_title": "Anemia — Initial Workup Before Hematology",
+      "status": "published",
+      "file": "anemia.json"
+    }
+  ]
+}
