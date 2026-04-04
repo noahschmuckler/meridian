@@ -256,6 +256,27 @@ opacity: 0.6;
 opacity: 1 !important;
 }
 
+.module-tab.selected {
+color: #fff;
+border-bottom-color: #fff;
+background: rgba(255,255,255,0.1);
+}
+
+.module-tab-rename {
+font-family: var(--mono, 'IBM Plex Mono', monospace);
+font-size: 10px;
+letter-spacing: 0.06em;
+text-transform: uppercase;
+color: #fff;
+background: rgba(255,255,255,0.15);
+border: 1px solid rgba(255,255,255,0.4);
+border-radius: 2px;
+padding: 2px 6px;
+outline: none;
+min-width: 60px;
+max-width: 160px;
+}
+
 /* Scroll fade hints */
 .module-tabs-wrapper::before,
 .module-tabs-wrapper::after {
@@ -1861,13 +1882,19 @@ font-style: italic;
   var MAX_TABS = 5;
   var openTabs = []; // array of module_ids currently open as tabs
 
+  var selectedTab = null; // module_id of tab in "selected" state (ready to rename)
+
+  function getModuleTitle(modId) {
+    var mod = moduleData[modId];
+    return mod.default_title.split(' \u2014 ')[0].split(' — ')[0];
+  }
+
   function renderTabs() {
     var tabsEl = document.getElementById('module-tabs');
     tabsEl.innerHTML = '';
     for (var i = 0; i < openTabs.length; i++) {
       var modId = openTabs[i];
-      var mod = moduleData[modId];
-      var title = mod.default_title.split(' \u2014 ')[0].split(' — ')[0];
+      var title = getModuleTitle(modId);
 
       var btn = document.createElement('button');
       btn.className = 'module-tab';
@@ -1875,10 +1902,8 @@ font-style: italic;
       btn.setAttribute('data-module', modId);
 
       var label = document.createElement('span');
+      label.className = 'module-tab-label';
       label.textContent = title;
-      label.addEventListener('click', (function(id) {
-        return function() { switchModule(id); };
-      })(modId));
       btn.appendChild(label);
 
       var close = document.createElement('span');
@@ -1890,12 +1915,132 @@ font-style: italic;
       btn.appendChild(close);
 
       btn.addEventListener('click', (function(id) {
-        return function() { switchModule(id); };
+        return function(e) {
+          if (e.target.closest('.module-tab-close')) return;
+          handleTabClick(id);
+        };
       })(modId));
 
       tabsEl.appendChild(btn);
     }
     setTimeout(updateTabFades, 50);
+  }
+
+  function handleTabClick(modId) {
+    if (currentModule !== modId) {
+      // Clicking inactive tab: switch to it, clear selected state
+      selectedTab = null;
+      switchModule(modId);
+    } else if (selectedTab !== modId) {
+      // First click on active tab: select it (ready to rename)
+      selectedTab = modId;
+      var tab = document.getElementById('tab-' + modId);
+      if (tab) tab.classList.add('selected');
+    } else {
+      // Second click on selected tab: open rename
+      selectedTab = null;
+      startRename(modId);
+    }
+  }
+
+  function startRename(modId) {
+    var tab = document.getElementById('tab-' + modId);
+    if (!tab) return;
+    var label = tab.querySelector('.module-tab-label');
+    if (!label) return;
+
+    var currentTitle = getModuleTitle(modId);
+    var input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'module-tab-rename';
+    input.value = currentTitle;
+    input.style.width = Math.max(60, currentTitle.length * 8) + 'px';
+
+    label.style.display = 'none';
+    tab.insertBefore(input, label);
+    input.focus();
+    input.select();
+
+    function commit() {
+      var newTitle = input.value.trim();
+      if (!newTitle) {
+        cancel();
+        return;
+      }
+      // Check for duplicate names
+      var duplicate = false;
+      for (var i = 0; i < moduleOrder.length; i++) {
+        var otherId = moduleOrder[i];
+        if (otherId === modId) continue;
+        if (getModuleTitle(otherId).toLowerCase() === newTitle.toLowerCase()) {
+          duplicate = true;
+          break;
+        }
+      }
+      if (duplicate) {
+        alert('A module named "' + newTitle + '" already exists. Choose a different name.');
+        input.focus();
+        input.select();
+        return;
+      }
+      // Apply rename
+      renameModule(modId, newTitle);
+      cleanup();
+    }
+
+    function cancel() {
+      cleanup();
+    }
+
+    function cleanup() {
+      if (input.parentNode) input.parentNode.removeChild(input);
+      label.style.display = '';
+      label.textContent = getModuleTitle(modId);
+      selectedTab = null;
+      tab.classList.remove('selected');
+    }
+
+    input.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') { e.preventDefault(); commit(); }
+      if (e.key === 'Escape') { e.preventDefault(); cancel(); }
+    });
+    input.addEventListener('blur', function() {
+      // Small delay to allow Enter keydown to fire first
+      setTimeout(commit, 100);
+    });
+  }
+
+  function renameModule(modId, newTitle) {
+    var mod = moduleData[modId];
+    var parts = mod.default_title.split(' \u2014 ');
+    var subtitle = parts.length === 2 ? parts[1] : '';
+    mod.default_title = subtitle ? newTitle + ' \u2014 ' + subtitle : newTitle;
+
+    // Update index entry
+    for (var i = 0; i < moduleIndex.modules.length; i++) {
+      if (moduleIndex.modules[i].module_id === modId) {
+        moduleIndex.modules[i].title = newTitle;
+        moduleIndex.modules[i].default_title = mod.default_title;
+        break;
+      }
+    }
+
+    // Update header if this is the current module
+    if (currentModule === modId) {
+      document.getElementById('header-title').textContent = mod.default_title;
+    }
+
+    renderTabs();
+  }
+
+  // Check if a module title already exists (for upload validation)
+  function isModuleTitleTaken(title, excludeModId) {
+    for (var i = 0; i < moduleOrder.length; i++) {
+      var id = moduleOrder[i];
+      if (id === excludeModId) continue;
+      if (getModuleTitle(id).toLowerCase() === title.toLowerCase()) return true;
+    }
+    return false;
   }
 
   // ── Tab Scrolling ──
@@ -2050,8 +2195,17 @@ font-style: italic;
 
   // ── Module Search ──
   function showSearchResults() {
+    clearSelectedTab();
     filterModules(document.getElementById('module-search').value);
     document.getElementById('module-search-results').classList.add('visible');
+  }
+
+  function clearSelectedTab() {
+    if (selectedTab) {
+      var tab = document.getElementById('tab-' + selectedTab);
+      if (tab) tab.classList.remove('selected');
+      selectedTab = null;
+    }
   }
 
   function hideSearchResults() {
@@ -2283,6 +2437,7 @@ font-style: italic;
   }
 
   function goFAQ(key) {
+    clearSelectedTab();
     var meta = getModuleMeta(currentModule);
     hideAllPages();
     document.getElementById(meta.pages[key]).classList.add('active');
