@@ -101,18 +101,111 @@ text-transform: uppercase;
 
 .back-btn:hover { color: #fff; }
 
+/* ── Module Search ── */
+.module-search-row {
+margin: 0 -24px;
+border-top: 1px solid rgba(255,255,255,0.15);
+position: relative;
+}
+
+.module-search-input {
+width: 100%;
+padding: 9px 24px;
+font-family: var(--mono, 'IBM Plex Mono', monospace);
+font-size: 12px;
+letter-spacing: 0.04em;
+color: #fff;
+background: rgba(255,255,255,0.08);
+border: none;
+border-bottom: 1px solid rgba(255,255,255,0.1);
+outline: none;
+}
+
+.module-search-input::placeholder {
+color: rgba(255,255,255,0.4);
+}
+
+.module-search-input:focus {
+background: rgba(255,255,255,0.12);
+}
+
+.module-search-results {
+display: none;
+position: absolute;
+top: 100%;
+left: 0;
+right: 0;
+z-index: 20;
+background: var(--surface, #FDFCF9);
+border: 1px solid var(--border);
+border-top: none;
+max-height: 240px;
+overflow-y: auto;
+box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.module-search-results.visible {
+display: block;
+}
+
+.module-search-result {
+padding: 10px 24px;
+font-size: 13px;
+color: var(--text);
+cursor: pointer;
+display: flex;
+justify-content: space-between;
+align-items: center;
+border-bottom: 1px solid var(--border);
+transition: background var(--transition);
+}
+
+.module-search-result:last-child {
+border-bottom: none;
+}
+
+.module-search-result:hover {
+background: var(--accent-light);
+}
+
+.module-search-result-title {
+font-weight: 500;
+}
+
+.module-search-result-subtitle {
+font-size: 11px;
+color: var(--text-muted);
+}
+
+.module-search-result-badge {
+font-family: var(--mono);
+font-size: 9px;
+text-transform: uppercase;
+letter-spacing: 0.06em;
+color: var(--accent);
+background: var(--accent-light);
+padding: 2px 6px;
+border-radius: 2px;
+flex-shrink: 0;
+}
+
 /* ── Module Tabs ── */
 .module-tabs {
 display: flex;
 margin: 0 -24px;
 border-top: 1px solid rgba(255,255,255,0.15);
+min-height: 0;
+}
+
+.module-tabs:empty {
+display: none;
 }
 
 .module-tab {
-flex: 1;
-padding: 10px 12px;
+flex: 0 1 auto;
+padding: 8px 10px;
 font-family: var(--mono, 'IBM Plex Mono', monospace);
-font-size: 11px;
+font-size: 10px;
 letter-spacing: 0.06em;
 text-transform: uppercase;
 text-align: center;
@@ -122,12 +215,32 @@ border: none;
 border-bottom: 2px solid transparent;
 cursor: pointer;
 transition: var(--transition, 240ms cubic-bezier(0.4, 0, 0.2, 1));
+display: flex;
+align-items: center;
+gap: 5px;
+white-space: nowrap;
 }
 
 .module-tab:hover { color: rgba(255,255,255,0.8); }
 .module-tab.active {
 color: #fff;
 border-bottom-color: #fff;
+}
+
+.module-tab-close {
+font-size: 13px;
+opacity: 0;
+transition: opacity var(--transition);
+line-height: 1;
+padding: 0 2px;
+}
+
+.module-tab:hover .module-tab-close {
+opacity: 0.6;
+}
+
+.module-tab-close:hover {
+opacity: 1 !important;
 }
 
 /* ── Pages ── */
@@ -1379,7 +1492,7 @@ font-style: italic;
     border: none;
     min-height: auto;
   }
-  header, .module-tabs, .view-toggle-row, .outline-controls,
+  header, .module-tabs, .module-search-row, .view-toggle-row, .outline-controls,
   .back-btn, .info-btn, .feedback-btn, .clear-checks-row,
   .pdf-btn, #pptx-btn, .view-toggle-actions, .module-feedback-row {
     display: none !important;
@@ -1445,8 +1558,13 @@ font-style: italic;
       <h1 id="header-title">Loading…</h1>
       <button class="info-btn" id="info-btn" onclick="toggleCollab()" title="Collaboration Architecture">i</button>
     </div>
+    <div class="module-search-row" id="module-search-row">
+      <input type="text" class="module-search-input" id="module-search"
+             placeholder="Search modules…" autocomplete="off"
+             onfocus="showSearchResults()" oninput="filterModules(this.value)">
+      <div class="module-search-results" id="module-search-results"></div>
+    </div>
     <div class="module-tabs" id="module-tabs">
-      <!-- Tabs rendered dynamically -->
     </div>
   </header>
 
@@ -1690,42 +1808,214 @@ font-style: italic;
       moduleData[loaded[i].module_id] = loaded[i];
     }
 
-    // Render tabs
-    renderTabs();
+    // Set up search blur handler
+    document.getElementById('module-search').addEventListener('blur', hideSearchResults);
 
-    // Render all module pages
-    var container = document.getElementById('module-container');
-    for (var i = 0; i < moduleOrder.length; i++) {
-      var mod = moduleData[moduleOrder[i]];
-      container.appendChild(renderHomePage(mod));
-      var faqs = mod.faqs;
-      for (var f = 0; f < faqs.length; f++) {
-        container.appendChild(renderFAQPage(mod.module_id, faqs[f]));
-      }
-    }
-
-    // Initialize
-    injectFeedbackButtons();
-    injectModuleFeedbackRows();
-    initCheckboxes();
-    switchModule(moduleOrder[0]);
+    // Open first module
+    openTab(moduleOrder[0]);
   }
+
+  // ── Dynamic Tab Management ──
+  var MAX_TABS = 5;
+  var openTabs = []; // array of module_ids currently open as tabs
 
   function renderTabs() {
     var tabsEl = document.getElementById('module-tabs');
     tabsEl.innerHTML = '';
-    for (var i = 0; i < moduleIndex.modules.length; i++) {
-      var m = moduleIndex.modules[i];
+    for (var i = 0; i < openTabs.length; i++) {
+      var modId = openTabs[i];
+      var mod = moduleData[modId];
+      var title = mod.default_title.split(' \u2014 ')[0].split(' — ')[0];
+
       var btn = document.createElement('button');
       btn.className = 'module-tab';
-      btn.id = 'tab-' + m.module_id;
-      btn.textContent = m.title.split(' ')[0]; // First word as tab label
-      btn.setAttribute('onclick', "switchModule('" + m.module_id + "')");
-      // Use short labels matching original: ADHD, Opiates, Benzos, Anemia, CKD
-      var labels = { adhd: 'ADHD', opiates: 'Opiates', benzos: 'Benzos', anemia: 'Anemia', ckd: 'CKD' };
-      btn.textContent = labels[m.module_id] || m.title.split(' ')[0];
+      btn.id = 'tab-' + modId;
+      btn.setAttribute('data-module', modId);
+
+      var label = document.createElement('span');
+      label.textContent = title;
+      label.addEventListener('click', (function(id) {
+        return function() { switchModule(id); };
+      })(modId));
+      btn.appendChild(label);
+
+      var close = document.createElement('span');
+      close.className = 'module-tab-close';
+      close.innerHTML = '&times;';
+      close.addEventListener('click', (function(id) {
+        return function(e) { e.stopPropagation(); closeTab(id); };
+      })(modId));
+      btn.appendChild(close);
+
+      btn.addEventListener('click', (function(id) {
+        return function() { switchModule(id); };
+      })(modId));
+
       tabsEl.appendChild(btn);
     }
+  }
+
+  function openTab(modId) {
+    // Already open? Just switch to it
+    if (openTabs.indexOf(modId) >= 0) {
+      switchModule(modId);
+      return;
+    }
+    // At max? Show a message
+    if (openTabs.length >= MAX_TABS) {
+      alert('Maximum ' + MAX_TABS + ' modules open. Close a tab first.');
+      return;
+    }
+    openTabs.push(modId);
+    // Ensure pages are rendered
+    ensureModuleRendered(modId);
+    renderTabs();
+    switchModule(modId);
+  }
+
+  function closeTab(modId) {
+    var idx = openTabs.indexOf(modId);
+    if (idx < 0) return;
+    openTabs.splice(idx, 1);
+    renderTabs();
+    // If we closed the active module, switch to another
+    if (currentModule === modId) {
+      if (openTabs.length > 0) {
+        switchModule(openTabs[Math.min(idx, openTabs.length - 1)]);
+      } else {
+        currentModule = null;
+        hideAllPages();
+        hideExpandedView();
+        document.getElementById('header-title').textContent = 'Meridian';
+      }
+    }
+  }
+
+  function ensureModuleRendered(modId) {
+    var mod = moduleData[modId];
+    var homeId = 'page-' + modId + '-home';
+    if (document.getElementById(homeId)) return; // already rendered
+    var container = document.getElementById('module-container');
+    container.appendChild(renderHomePage(mod));
+    for (var f = 0; f < mod.faqs.length; f++) {
+      container.appendChild(renderFAQPage(mod.module_id, mod.faqs[f]));
+    }
+    // Inject feedback and checkboxes for new pages
+    var home = document.getElementById(homeId);
+    var checkItems = home.querySelectorAll('.check-item');
+    for (var i = 0; i < checkItems.length; i++) {
+      var text = checkItems[i].querySelector('.check-item-text');
+      var arrow = checkItems[i].querySelector('.item-arrow');
+      if (text && arrow) checkItems[i].insertBefore(createFeedbackBtn(text.textContent.trim()), arrow);
+    }
+    var zoneItems = home.querySelectorAll('.zone-item');
+    for (var i = 0; i < zoneItems.length; i++) {
+      var text = zoneItems[i].querySelector('.zone-item-text');
+      var arrow = zoneItems[i].querySelector('.zone-item-arrow');
+      if (text && arrow) zoneItems[i].insertBefore(createFeedbackBtn(text.textContent.trim()), arrow);
+    }
+    // FAQ feedback buttons
+    var faqPages = document.querySelectorAll('[id^="page-' + modId + '-faq-"]');
+    for (var p = 0; p < faqPages.length; p++) {
+      var faqQs = faqPages[p].querySelectorAll('.faq-q');
+      for (var q = 0; q < faqQs.length; q++) {
+        var chevron = faqQs[q].querySelector('.faq-chevron');
+        var qText = faqQs[q].textContent.replace(/[\u25BE\u25B4]/g, '').trim();
+        if (chevron) {
+          var prefix = parentPrefix(faqQs[q]);
+          faqQs[q].insertBefore(createFeedbackBtn(prefix + qText), chevron);
+        }
+      }
+    }
+    // Checkbox listeners
+    var boxes = home.querySelectorAll('.check-box[data-key]');
+    for (var i = 0; i < boxes.length; i++) {
+      boxes[i].addEventListener('click', toggleCheck);
+    }
+    // Module feedback rows
+    var modName = mod.default_title.split(' \u2014 ')[0].split(' — ')[0];
+    var intro = home.querySelector('.landing-intro');
+    if (intro) {
+      intro.parentNode.insertBefore(
+        createFeedbackRow(modName + ' Module (General)', 'Feedback on the ' + modName + ' module as a whole'),
+        intro.nextSibling
+      );
+    }
+    var footer = home.querySelector('.footer-note');
+    if (footer) {
+      footer.parentNode.insertBefore(
+        createFeedbackRow('Meridian Interface (General)', 'Feedback on the Meridian interface as a whole'),
+        footer
+      );
+    }
+  }
+
+  // ── Module Search ──
+  function showSearchResults() {
+    filterModules(document.getElementById('module-search').value);
+    document.getElementById('module-search-results').classList.add('visible');
+  }
+
+  function hideSearchResults() {
+    setTimeout(function() {
+      document.getElementById('module-search-results').classList.remove('visible');
+    }, 200); // delay to allow click to register
+  }
+
+  function filterModules(query) {
+    var results = document.getElementById('module-search-results');
+    results.innerHTML = '';
+    query = (query || '').toLowerCase();
+
+    var matches = moduleIndex.modules.filter(function(m) {
+      if (!query) return true;
+      return m.default_title.toLowerCase().indexOf(query) >= 0 ||
+             m.module_id.toLowerCase().indexOf(query) >= 0;
+    });
+
+    if (matches.length === 0) {
+      results.innerHTML = '<div style="padding:12px 24px;color:#6B6560;font-size:13px;">No modules found</div>';
+      results.classList.add('visible');
+      return;
+    }
+
+    for (var i = 0; i < matches.length; i++) {
+      var m = matches[i];
+      var isOpen = openTabs.indexOf(m.module_id) >= 0;
+      var div = document.createElement('div');
+      div.className = 'module-search-result';
+      div.setAttribute('data-module', m.module_id);
+
+      var textSpan = document.createElement('div');
+      var titleSpan = document.createElement('div');
+      titleSpan.className = 'module-search-result-title';
+      titleSpan.textContent = m.title;
+      var subSpan = document.createElement('div');
+      subSpan.className = 'module-search-result-subtitle';
+      subSpan.textContent = m.subtitle;
+      textSpan.appendChild(titleSpan);
+      textSpan.appendChild(subSpan);
+      div.appendChild(textSpan);
+
+      if (isOpen) {
+        var badge = document.createElement('span');
+        badge.className = 'module-search-result-badge';
+        badge.textContent = 'Open';
+        div.appendChild(badge);
+      }
+
+      div.addEventListener('click', (function(id) {
+        return function() {
+          openTab(id);
+          document.getElementById('module-search').value = '';
+          document.getElementById('module-search-results').classList.remove('visible');
+          document.getElementById('module-search').blur();
+        };
+      })(m.module_id));
+
+      results.appendChild(div);
+    }
+    results.classList.add('visible');
   }
 
   function renderHomePage(mod) {
@@ -1869,6 +2159,7 @@ font-style: italic;
     currentModule = mod;
     collabOpen = false;
     document.getElementById('info-btn').classList.remove('active');
+    document.getElementById('module-search-row').style.display = '';
     document.querySelector('.module-tabs').style.display = 'flex';
     document.getElementById('view-toggle-row').style.display = 'flex';
     var meta = getModuleMeta(mod);
@@ -1881,7 +2172,8 @@ font-style: italic;
     for (var i = 0; i < tabs.length; i++) {
       tabs[i].classList.remove('active');
     }
-    document.getElementById('tab-' + mod).classList.add('active');
+    var activeTab = document.getElementById('tab-' + mod);
+    if (activeTab) activeTab.classList.add('active');
 
     if (viewMode === 'expanded') {
       showExpandedView(mod);
@@ -1920,6 +2212,7 @@ font-style: italic;
     if (collabOpen) {
       collabOpen = false;
       infoBtn.classList.remove('active');
+      document.getElementById('module-search-row').style.display = '';
       document.querySelector('.module-tabs').style.display = 'flex';
       switchModule(previousModule);
     } else {
@@ -1931,6 +2224,7 @@ font-style: italic;
       document.getElementById('page-collab').classList.add('active');
       document.getElementById('back-btn').style.display = 'none';
       document.getElementById('header-title').textContent = 'How Meridian Gets Better';
+      document.getElementById('module-search-row').style.display = 'none';
       document.querySelector('.module-tabs').style.display = 'none';
       document.getElementById('view-toggle-row').style.display = 'none';
       var tabs = document.querySelectorAll('.module-tab');
