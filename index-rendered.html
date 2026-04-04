@@ -1345,7 +1345,7 @@ font-style: italic;
   }
   header, .module-tabs, .view-toggle-row, .outline-controls,
   .back-btn, .info-btn, .feedback-btn, .clear-checks-row,
-  .pdf-btn, .view-toggle-actions {
+  .pdf-btn, #pptx-btn, .view-toggle-actions {
     display: none !important;
   }
   /* Show the print header instead */
@@ -1421,6 +1421,7 @@ font-style: italic;
       <button class="view-toggle-btn" id="btn-expanded" onclick="setViewMode('expanded')">Expanded</button>
     </div>
     <div class="view-toggle-actions">
+      <button class="pdf-btn" id="pptx-btn" onclick="downloadPPTX()" style="display:none">Download PPTX</button>
       <button class="pdf-btn" id="pdf-btn" onclick="downloadPDF()" style="display:none">Download PDF</button>
     </div>
   </div>
@@ -2105,6 +2106,7 @@ font-style: italic;
     document.getElementById('btn-compact').classList.toggle('active', mode === 'compact');
     document.getElementById('btn-expanded').classList.toggle('active', mode === 'expanded');
     document.getElementById('pdf-btn').style.display = mode === 'expanded' ? '' : 'none';
+    document.getElementById('pptx-btn').style.display = mode === 'expanded' ? '' : 'none';
 
     // Re-render current module in the new mode
     if (currentModule) {
@@ -2319,9 +2321,16 @@ font-style: italic;
     }
   }
 
-  // ── PDF Download ──
+  // ── Downloads ──
   function downloadPDF() {
     window.print();
+  }
+
+  function downloadPPTX() {
+    var link = document.createElement('a');
+    link.href = 'presentations/' + currentModule + '.pptx';
+    link.download = currentModule + '.pptx';
+    link.click();
   }
 
   // ── Boot ──
