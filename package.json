@@ -1,0 +1,15 @@
+{
+  "name": "meridian",
+  "version": "1.0.0",
+  "description": "Controlled substances prescribing reference framework for primary care clinicians.",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx playwright test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.59.1"
+  }
+}

@@ -2843,7 +2843,7 @@ font-style: italic;
 
     // ── Checklist Section ──
     html += '<div class="expanded-section" data-section="checklist">';
-    html += '<div class="expanded-section-header" onclick="toggleSection(this)" role="button" tabindex="0" aria-expanded="true" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleSection(this)}">';
+    html += '<div class="expanded-section-header" onclick="toggleSection(this)" role="button" tabindex="0" aria-expanded="true" onkeydown="if(event.key===\' \'||event.key===\'Enter\'){event.preventDefault();toggleSection(this)}">';
     html += '<div class="expanded-section-label">' + escHtml(mod.checklist_section_label) + '</div>';
     html += '<span class="expanded-section-chevron">&#9662;</span>';
     html += '</div>';
@@ -2865,7 +2865,7 @@ font-style: italic;
     // ── Green Zone ──
     if (mod.green_zone) {
       html += '<div class="expanded-section" data-section="green-zone">';
-      html += '<div class="expanded-section-header" onclick="toggleSection(this)" role="button" tabindex="0" aria-expanded="true" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleSection(this)}">';
+      html += '<div class="expanded-section-header" onclick="toggleSection(this)" role="button" tabindex="0" aria-expanded="true" onkeydown="if(event.key===\' \'||event.key===\'Enter\'){event.preventDefault();toggleSection(this)}">';
       html += '<div class="expanded-section-label">' + escHtml(mod.green_zone.zone_label) + '</div>';
       html += '<span class="expanded-section-chevron">&#9662;</span>';
       html += '</div>';
@@ -2879,7 +2879,7 @@ font-style: italic;
 
     // ── Escalation Section ──
     html += '<div class="expanded-section" data-section="escalation">';
-    html += '<div class="expanded-section-header" onclick="toggleSection(this)" role="button" tabindex="0" aria-expanded="true" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleSection(this)}">';
+    html += '<div class="expanded-section-header" onclick="toggleSection(this)" role="button" tabindex="0" aria-expanded="true" onkeydown="if(event.key===\' \'||event.key===\'Enter\'){event.preventDefault();toggleSection(this)}">';
     html += '<div class="expanded-section-label">' + escHtml(mod.escalation_section_label) + '</div>';
     html += '<span class="expanded-section-chevron">&#9662;</span>';
     html += '</div>';
@@ -2901,7 +2901,7 @@ font-style: italic;
     // ── Context Strip (if present) ──
     if (mod.context_strip) {
       html += '<div class="expanded-section" data-section="context">';
-      html += '<div class="expanded-section-header" onclick="toggleSection(this)" role="button" tabindex="0" aria-expanded="true" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleSection(this)}">';
+      html += '<div class="expanded-section-header" onclick="toggleSection(this)" role="button" tabindex="0" aria-expanded="true" onkeydown="if(event.key===\' \'||event.key===\'Enter\'){event.preventDefault();toggleSection(this)}">';
       html += '<div class="expanded-section-label">' + escHtml(mod.context_strip.label) + '</div>';
       html += '<span class="expanded-section-chevron">&#9662;</span>';
       html += '</div>';
@@ -2914,7 +2914,7 @@ font-style: italic;
 
     // ── FAQ Reference Section ──
     html += '<div class="expanded-section" data-section="faqs">';
-    html += '<div class="expanded-section-header" onclick="toggleSection(this)" role="button" tabindex="0" aria-expanded="true" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleSection(this)}">';
+    html += '<div class="expanded-section-header" onclick="toggleSection(this)" role="button" tabindex="0" aria-expanded="true" onkeydown="if(event.key===\' \'||event.key===\'Enter\'){event.preventDefault();toggleSection(this)}">';
     html += '<div class="expanded-section-label">Reference — FAQs</div>';
     html += '<span class="expanded-section-chevron">&#9662;</span>';
     html += '</div>';
@@ -2932,7 +2932,7 @@ font-style: italic;
       for (var q = 0; q < faq.items.length; q++) {
         var qa = faq.items[q];
         html += '<div class="expanded-faq-qa">';
-        html += '<div class="expanded-faq-question" onclick="toggleExpandedQA(this)" role="button" tabindex="0" aria-expanded="false" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleExpandedQA(this)}">';
+        html += '<div class="expanded-faq-question" onclick="toggleExpandedQA(this)" role="button" tabindex="0" aria-expanded="false" onkeydown="if(event.key===\' \'||event.key===\'Enter\'){event.preventDefault();toggleExpandedQA(this)}">';
         html += '<span>' + escHtml(qa.question) + '</span>';
         html += '<span class="expanded-faq-question-chevron">&#9662;</span>';
         html += '</div>';
