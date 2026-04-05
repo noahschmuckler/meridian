@@ -1638,10 +1638,10 @@ font-style: italic;
       <button class="view-toggle-btn" id="btn-expanded" onclick="setViewMode('expanded')">Expanded</button>
     </div>
     <div class="view-toggle-actions">
-      <button class="pdf-btn" id="upload-btn" onclick="triggerUpload()">Upload DOCX</button>
+      <button class="pdf-btn" id="pdf-btn" onclick="downloadPDF()">Download PDF</button>
+      <button class="pdf-btn" id="upload-btn" onclick="triggerUpload()" style="display:none">Upload DOCX</button>
       <button class="pdf-btn" id="docx-btn" onclick="downloadDOCX()" style="display:none">Download DOCX</button>
       <button class="pdf-btn" id="pptx-btn" onclick="downloadPPTX()" style="display:none">Download PPTX</button>
-      <button class="pdf-btn" id="pdf-btn" onclick="downloadPDF()" style="display:none">Download PDF</button>
       <input type="file" id="docx-file-input" accept=".docx" style="display:none" onchange="handleDocxUpload(this)">
     </div>
   </div>
@@ -2769,7 +2769,8 @@ font-style: italic;
     viewMode = mode;
     document.getElementById('btn-compact').classList.toggle('active', mode === 'compact');
     document.getElementById('btn-expanded').classList.toggle('active', mode === 'expanded');
-    document.getElementById('pdf-btn').style.display = mode === 'expanded' ? '' : 'none';
+    document.getElementById('pdf-btn').style.display = '';
+    document.getElementById('upload-btn').style.display = mode === 'expanded' ? '' : 'none';
     document.getElementById('pptx-btn').style.display = mode === 'expanded' ? '' : 'none';
     document.getElementById('docx-btn').style.display = mode === 'expanded' ? '' : 'none';
 
