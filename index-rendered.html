@@ -13,8 +13,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
 <title>Meridian</title>
-<script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js" integrity="sha384-Cck14aA9cifjYolcnjebXRfWGkz5ltHMBiG4px/j8GS+xQcb7OhNQWZYyWjQ+UwQ" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js" integrity="sha384-/cXAMbzovUIKbBERjPmR3SnPTh8siWr5lsvFYj1Uq4XP0yaJUZJmsh0YXyGv5P0y" crossorigin="anonymous"></script>
 <style>
 
 :root {
@@ -1860,26 +1860,48 @@ font-style: italic;
 
   // ── Load & Render ──
   async function loadApp() {
-    // Load index
-    var resp = await fetch('modules/index.json');
-    moduleIndex = await resp.json();
-    moduleOrder = moduleIndex.modules.map(function(m) { return m.module_id; });
+    try {
+      // Load index
+      var resp = await fetch('modules/index.json');
+      if (!resp.ok) throw new Error('Failed to load module index (HTTP ' + resp.status + ')');
+      moduleIndex = await resp.json();
+      moduleOrder = moduleIndex.modules.map(function(m) { return m.module_id; });
 
-    // Load all modules in parallel
-    var fetches = moduleIndex.modules.map(function(m) {
-      return fetch('modules/' + m.file).then(function(r) { return r.json(); });
-    });
-    var loaded = await Promise.all(fetches);
-    for (var i = 0; i < loaded.length; i++) {
-      moduleData[loaded[i].module_id] = loaded[i];
+      // Load all modules in parallel
+      var results = await Promise.allSettled(moduleIndex.modules.map(function(m) {
+        return fetch('modules/' + m.file).then(function(r) {
+          if (!r.ok) throw new Error(m.file + ' HTTP ' + r.status);
+          return r.json();
+        });
+      }));
+      var failedModules = [];
+      for (var i = 0; i < results.length; i++) {
+        if (results[i].status === 'fulfilled') {
+          moduleData[results[i].value.module_id] = results[i].value;
+        } else {
+          failedModules.push(moduleIndex.modules[i].module_id);
+        }
+      }
+      // Remove failed modules from order
+      if (failedModules.length > 0) {
+        moduleOrder = moduleOrder.filter(function(id) { return failedModules.indexOf(id) === -1; });
+        console.error('Meridian: failed to load modules:', failedModules);
+      }
+      if (moduleOrder.length === 0) throw new Error('No modules could be loaded');
+
+      // Set up search blur handler and tab scrolling
+      document.getElementById('module-search').addEventListener('blur', hideSearchResults);
+      initTabScroll();
+
+      // Open first module
+      openTab(moduleOrder[0]);
+    } catch (err) {
+      console.error('Meridian: loadApp failed:', err);
+      var container = document.getElementById('app') || document.body;
+      container.innerHTML = '<div style="padding:2rem;text-align:center;font-family:IBM Plex Sans,sans-serif;color:#6B6560;">'
+        + '<p style="font-size:1.1rem;margin-bottom:0.5rem;">Unable to load clinical modules.</p>'
+        + '<p>Check your connection and <a href="javascript:location.reload()">reload</a>.</p></div>';
     }
-
-    // Set up search blur handler and tab scrolling
-    document.getElementById('module-search').addEventListener('blur', hideSearchResults);
-    initTabScroll();
-
-    // Open first module
-    openTab(moduleOrder[0]);
   }
 
   // ── Dynamic Tab Management ──
@@ -2296,7 +2318,7 @@ font-style: italic;
     for (var i = 0; i < mod.checklist.length; i++) {
       var item = mod.checklist[i];
       html += '<div class="check-item" onclick="goFAQ(\'' + escAttr(item.faq_ref) + '\')">';
-      html += '<div class="check-box" data-key="' + escAttr(item.item_id) + '"></div>';
+      html += '<div class="check-box" data-key="' + escAttr(item.item_id) + '" role="checkbox" aria-checked="false" tabindex="0"></div>';
       html += '<div class="check-item-text">' + escHtml(item.statement) + '</div>';
       html += '<div class="item-arrow">&rsaquo;</div>';
       html += '</div>';
@@ -2360,7 +2382,7 @@ font-style: italic;
     for (var i = 0; i < faq.items.length; i++) {
       var qa = faq.items[i];
       html += '<div class="faq-item">';
-      html += '<div class="faq-q" onclick="toggleFAQ(this)">';
+      html += '<div class="faq-q" onclick="toggleFAQ(this)" role="button" tabindex="0" aria-expanded="false" onkeydown="if(event.key===\' \'||event.key===\'Enter\'){event.preventDefault();toggleFAQ(this)}">';
       html += escHtml(qa.question);
       html += ' <span class="faq-chevron">&#9662;</span>';
       html += '</div>';
@@ -2462,6 +2484,7 @@ font-style: italic;
   function toggleFAQ(el) {
     var item = el.parentElement;
     item.classList.toggle('open');
+    el.setAttribute('aria-expanded', item.classList.contains('open'));
   }
 
   function toggleCollab() {
@@ -2638,9 +2661,11 @@ font-style: italic;
     if (checks[key]) {
       delete checks[key];
       box.classList.remove('checked');
+      box.setAttribute('aria-checked', 'false');
     } else {
       checks[key] = true;
       box.classList.add('checked');
+      box.setAttribute('aria-checked', 'true');
     }
     saveChecks(checks);
     updateClearBtn();
@@ -2656,8 +2681,10 @@ font-style: italic;
       var key = currentModule + ':' + boxes[i].getAttribute('data-key');
       if (checks[key]) {
         boxes[i].classList.add('checked');
+        boxes[i].setAttribute('aria-checked', 'true');
       } else {
         boxes[i].classList.remove('checked');
+        boxes[i].setAttribute('aria-checked', 'false');
       }
     }
     updateClearBtn();
@@ -2693,6 +2720,9 @@ font-style: italic;
     var boxes = document.querySelectorAll('.check-box[data-key]');
     for (var i = 0; i < boxes.length; i++) {
       boxes[i].addEventListener('click', toggleCheck);
+      boxes[i].addEventListener('keydown', function(e) {
+        if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggleCheck(e); }
+      });
     }
   }
 
@@ -2813,7 +2843,7 @@ font-style: italic;
 
     // ── Checklist Section ──
     html += '<div class="expanded-section" data-section="checklist">';
-    html += '<div class="expanded-section-header" onclick="toggleSection(this)">';
+    html += '<div class="expanded-section-header" onclick="toggleSection(this)" role="button" tabindex="0" aria-expanded="true" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleSection(this)}">';
     html += '<div class="expanded-section-label">' + escHtml(mod.checklist_section_label) + '</div>';
     html += '<span class="expanded-section-chevron">&#9662;</span>';
     html += '</div>';
@@ -2835,7 +2865,7 @@ font-style: italic;
     // ── Green Zone ──
     if (mod.green_zone) {
       html += '<div class="expanded-section" data-section="green-zone">';
-      html += '<div class="expanded-section-header" onclick="toggleSection(this)">';
+      html += '<div class="expanded-section-header" onclick="toggleSection(this)" role="button" tabindex="0" aria-expanded="true" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleSection(this)}">';
       html += '<div class="expanded-section-label">' + escHtml(mod.green_zone.zone_label) + '</div>';
       html += '<span class="expanded-section-chevron">&#9662;</span>';
       html += '</div>';
@@ -2849,7 +2879,7 @@ font-style: italic;
 
     // ── Escalation Section ──
     html += '<div class="expanded-section" data-section="escalation">';
-    html += '<div class="expanded-section-header" onclick="toggleSection(this)">';
+    html += '<div class="expanded-section-header" onclick="toggleSection(this)" role="button" tabindex="0" aria-expanded="true" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleSection(this)}">';
     html += '<div class="expanded-section-label">' + escHtml(mod.escalation_section_label) + '</div>';
     html += '<span class="expanded-section-chevron">&#9662;</span>';
     html += '</div>';
@@ -2871,7 +2901,7 @@ font-style: italic;
     // ── Context Strip (if present) ──
     if (mod.context_strip) {
       html += '<div class="expanded-section" data-section="context">';
-      html += '<div class="expanded-section-header" onclick="toggleSection(this)">';
+      html += '<div class="expanded-section-header" onclick="toggleSection(this)" role="button" tabindex="0" aria-expanded="true" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleSection(this)}">';
       html += '<div class="expanded-section-label">' + escHtml(mod.context_strip.label) + '</div>';
       html += '<span class="expanded-section-chevron">&#9662;</span>';
       html += '</div>';
@@ -2884,7 +2914,7 @@ font-style: italic;
 
     // ── FAQ Reference Section ──
     html += '<div class="expanded-section" data-section="faqs">';
-    html += '<div class="expanded-section-header" onclick="toggleSection(this)">';
+    html += '<div class="expanded-section-header" onclick="toggleSection(this)" role="button" tabindex="0" aria-expanded="true" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleSection(this)}">';
     html += '<div class="expanded-section-label">Reference — FAQs</div>';
     html += '<span class="expanded-section-chevron">&#9662;</span>';
     html += '</div>';
@@ -2902,7 +2932,7 @@ font-style: italic;
       for (var q = 0; q < faq.items.length; q++) {
         var qa = faq.items[q];
         html += '<div class="expanded-faq-qa">';
-        html += '<div class="expanded-faq-question" onclick="toggleExpandedQA(this)">';
+        html += '<div class="expanded-faq-question" onclick="toggleExpandedQA(this)" role="button" tabindex="0" aria-expanded="false" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleExpandedQA(this)}">';
         html += '<span>' + escHtml(qa.question) + '</span>';
         html += '<span class="expanded-faq-question-chevron">&#9662;</span>';
         html += '</div>';
@@ -2926,6 +2956,7 @@ font-style: italic;
   function toggleSection(headerEl) {
     var section = headerEl.parentElement;
     section.classList.toggle('collapsed');
+    headerEl.setAttribute('aria-expanded', !section.classList.contains('collapsed'));
   }
 
   function toggleFaqEntry(headerEl) {
@@ -2936,6 +2967,7 @@ font-style: italic;
   function toggleExpandedQA(questionEl) {
     var qa = questionEl.parentElement;
     qa.classList.toggle('open');
+    questionEl.setAttribute('aria-expanded', qa.classList.contains('open'));
   }
 
   function expandAllSections(modId) {
@@ -2994,9 +3026,17 @@ font-style: italic;
     reader.readAsArrayBuffer(file);
   }
 
+  function sanitizeHtml(html) {
+    // Strip script/style tags and on* event handlers from untrusted HTML
+    return html
+      .replace(/<script[\s\S]*?<\/script>/gi, '')
+      .replace(/<style[\s\S]*?<\/style>/gi, '')
+      .replace(/\son\w+\s*=\s*("[^"]*"|'[^']*'|[^\s>]*)/gi, '');
+  }
+
   function parseDocxHtml(html) {
     var div = document.createElement('div');
-    div.innerHTML = html;
+    div.innerHTML = sanitizeHtml(html);
 
     var mod = {
       schema_version: '1.0.0',
@@ -3642,6 +3682,14 @@ font-style: italic;
       });
     }
   }
+
+  // ── Error Reporting ──
+  window.addEventListener('error', function(e) {
+    console.error('Meridian error:', e.message, e.filename, e.lineno);
+  });
+  window.addEventListener('unhandledrejection', function(e) {
+    console.error('Meridian promise rejection:', e.reason);
+  });
 
   // ── Boot ──
   document.addEventListener('DOMContentLoaded', function() {
