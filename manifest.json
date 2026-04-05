@@ -2,7 +2,7 @@
   "name": "Meridian",
   "short_name": "Meridian",
   "description": "Controlled Substances Reference",
-  "start_url": "/index-rendered.html",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#F4F1EC",
   "theme_color": "#1A5C3A",
