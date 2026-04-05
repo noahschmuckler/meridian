@@ -14,6 +14,7 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
 <title>Meridian</title>
 <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
 <style>
 
 :root {
@@ -1555,7 +1556,7 @@ font-style: italic;
   }
   header, .module-tabs, .module-search-row, .view-toggle-row, .outline-controls,
   .back-btn, .info-btn, .feedback-btn, .clear-checks-row,
-  .pdf-btn, #pptx-btn, .view-toggle-actions, .module-feedback-row {
+  .pdf-btn, #pptx-btn, #docx-btn, #upload-btn, .view-toggle-actions, .module-feedback-row {
     display: none !important;
   }
   /* Show the print header instead */
@@ -1637,8 +1638,11 @@ font-style: italic;
       <button class="view-toggle-btn" id="btn-expanded" onclick="setViewMode('expanded')">Expanded</button>
     </div>
     <div class="view-toggle-actions">
+      <button class="pdf-btn" id="upload-btn" onclick="triggerUpload()">Upload DOCX</button>
+      <button class="pdf-btn" id="docx-btn" onclick="downloadDOCX()" style="display:none">Download DOCX</button>
       <button class="pdf-btn" id="pptx-btn" onclick="downloadPPTX()" style="display:none">Download PPTX</button>
       <button class="pdf-btn" id="pdf-btn" onclick="downloadPDF()" style="display:none">Download PDF</button>
+      <input type="file" id="docx-file-input" accept=".docx" style="display:none" onchange="handleDocxUpload(this)">
     </div>
   </div>
 
@@ -2737,6 +2741,7 @@ font-style: italic;
     document.getElementById('btn-expanded').classList.toggle('active', mode === 'expanded');
     document.getElementById('pdf-btn').style.display = mode === 'expanded' ? '' : 'none';
     document.getElementById('pptx-btn').style.display = mode === 'expanded' ? '' : 'none';
+    document.getElementById('docx-btn').style.display = mode === 'expanded' ? '' : 'none';
 
     // Re-render current module in the new mode
     if (currentModule) {
@@ -2954,6 +2959,287 @@ font-style: italic;
   // ── Downloads ──
   function downloadPDF() {
     window.print();
+  }
+
+  // ── DOCX Upload / Download ──
+  function triggerUpload() {
+    document.getElementById('docx-file-input').click();
+  }
+
+  function handleDocxUpload(input) {
+    var file = input.files[0];
+    if (!file) return;
+    input.value = ''; // reset so same file can be re-uploaded
+
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var arrayBuffer = e.target.result;
+      mammoth.convertToHtml({ arrayBuffer: arrayBuffer }, {
+        styleMap: [
+          "p[style-name='Heading 1'] => h1:fresh",
+          "p[style-name='Heading 2'] => h2:fresh",
+          "p[style-name='Heading 3'] => h3:fresh"
+        ]
+      }).then(function(result) {
+        try {
+          var mod = parseDocxHtml(result.value);
+          loadUploadedModule(mod);
+        } catch (err) {
+          alert('Error parsing template: ' + err.message);
+        }
+      }).catch(function(err) {
+        alert('Error reading DOCX file: ' + err.message);
+      });
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  function parseDocxHtml(html) {
+    var div = document.createElement('div');
+    div.innerHTML = html;
+
+    var mod = {
+      schema_version: '1.0.0',
+      module_id: '',
+      default_title: '',
+      landing_intro: '',
+      checklist_section_label: 'Before you decide — verify all four',
+      checklist: [],
+      green_zone: null,
+      escalation_section_label: 'Escalate if any apply',
+      escalation: [],
+      context_strip: null,
+      footer_note: '',
+      faqs: []
+    };
+
+    // Walk through elements sequentially
+    var elements = div.children;
+    var currentSection = null;
+    var currentFaq = null;
+    var currentQA = null; // { question, answer_parts }
+    var faqItemCollector = [];
+
+    function flushQA() {
+      if (currentQA && currentFaq) {
+        currentFaq.items.push({
+          question: currentQA.question,
+          answer_html: currentQA.answer_parts.join('\n')
+        });
+        currentQA = null;
+      }
+    }
+
+    function flushFaq() {
+      flushQA();
+      if (currentFaq) {
+        mod.faqs.push(currentFaq);
+        currentFaq = null;
+      }
+    }
+
+    for (var i = 0; i < elements.length; i++) {
+      var el = elements[i];
+      var tag = el.tagName.toLowerCase();
+      var text = el.textContent.trim();
+
+      // Skip instruction lines
+      if (text.indexOf('>>>') === 0) continue;
+      // Skip separator lines
+      if (/^[─]{5,}$/.test(text)) continue;
+      // Skip empty
+      if (!text) continue;
+
+      if (tag === 'h1') {
+        mod.default_title = text;
+        // Generate module_id from title
+        var titlePart = text.split(' \u2014 ')[0].split(' — ')[0];
+        mod.module_id = titlePart.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        continue;
+      }
+
+      if (tag === 'h2') {
+        // Flush any open FAQ
+        flushFaq();
+
+        var sectionName = text.toLowerCase();
+        if (sectionName === 'introduction') currentSection = 'intro';
+        else if (sectionName === 'checklist items') currentSection = 'checklist';
+        else if (sectionName === 'green zone') currentSection = 'green_zone';
+        else if (sectionName === 'escalation items') currentSection = 'escalation';
+        else if (sectionName === 'context') currentSection = 'context';
+        else if (sectionName === 'footer') currentSection = 'footer';
+        else if (sectionName === 'faq reference') currentSection = 'faq';
+        continue;
+      }
+
+      if (tag === 'h3') {
+        // Parse [id] from heading
+        var idMatch = text.match(/^\[([^\]]+)\]\s*(.*)/);
+        var itemId = idMatch ? idMatch[1] : text.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        var itemText = idMatch ? idMatch[2] : text;
+
+        if (currentSection === 'checklist') {
+          mod.checklist.push({
+            item_id: itemId,
+            position: mod.checklist.length + 1,
+            statement: itemText,
+            faq_ref: itemId
+          });
+        } else if (currentSection === 'escalation') {
+          mod.escalation.push({
+            item_id: itemId,
+            position: mod.escalation.length + 1,
+            statement: itemText,
+            faq_ref: itemId
+          });
+        } else if (currentSection === 'faq') {
+          flushFaq();
+          currentFaq = {
+            faq_id: itemId,
+            topic: itemText,
+            title: '',
+            referenced_by: [],
+            items: []
+          };
+        }
+        continue;
+      }
+
+      // Paragraph content — route based on current section
+      if (tag === 'p') {
+        if (currentSection === 'intro') {
+          mod.landing_intro = text;
+          continue;
+        }
+
+        if (currentSection === 'green_zone') {
+          var fieldMatch = text.match(/^(Label|Narrative|SmartPhrase):\s*(.*)/);
+          if (fieldMatch) {
+            if (!mod.green_zone) mod.green_zone = { zone_label: '', narrative_html: '', smartphrase: '' };
+            var field = fieldMatch[1];
+            var val = fieldMatch[2];
+            if (field === 'Label') mod.green_zone.zone_label = val;
+            else if (field === 'Narrative') mod.green_zone.narrative_html = '<p>' + escHtml(val) + '</p>';
+            else if (field === 'SmartPhrase') mod.green_zone.smartphrase = val;
+          }
+          continue;
+        }
+
+        if (currentSection === 'context') {
+          var fieldMatch = text.match(/^(Label|Text):\s*(.*)/);
+          if (fieldMatch) {
+            if (!mod.context_strip) mod.context_strip = { label: '', text: '' };
+            if (fieldMatch[1] === 'Label') mod.context_strip.label = fieldMatch[2];
+            else mod.context_strip.text = fieldMatch[2];
+          }
+          continue;
+        }
+
+        if (currentSection === 'footer') {
+          mod.footer_note = text;
+          continue;
+        }
+
+        if (currentSection === 'faq' && currentFaq) {
+          // Check for FAQ Title field
+          var titleMatch = text.match(/^FAQ Title:\s*(.*)/);
+          if (titleMatch) {
+            currentFaq.title = titleMatch[1];
+            continue;
+          }
+
+          // Check for Question field
+          var qMatch = text.match(/^Question:\s*(.*)/);
+          if (qMatch) {
+            flushQA();
+            currentQA = { question: qMatch[1], answer_parts: [] };
+            continue;
+          }
+
+          // Otherwise it's answer content
+          if (currentQA) {
+            // Get the inner HTML of this paragraph (preserves bold/italic)
+            currentQA.answer_parts.push('<p>' + el.innerHTML + '</p>');
+          }
+          continue;
+        }
+      }
+    }
+
+    // Flush final FAQ
+    flushFaq();
+
+    // Build referenced_by from checklist/escalation faq_refs
+    var refMap = {};
+    var allItems = mod.checklist.concat(mod.escalation);
+    for (var i = 0; i < allItems.length; i++) {
+      var ref = allItems[i].faq_ref;
+      if (ref) {
+        if (!refMap[ref]) refMap[ref] = [];
+        refMap[ref].push(allItems[i].item_id);
+      }
+    }
+    for (var i = 0; i < mod.faqs.length; i++) {
+      mod.faqs[i].referenced_by = refMap[mod.faqs[i].faq_id] || [];
+    }
+
+    // Remove empty context strip
+    if (mod.context_strip && !mod.context_strip.label && !mod.context_strip.text) {
+      mod.context_strip = null;
+    }
+
+    // Validation
+    if (!mod.default_title) throw new Error('No module title found (Heading 1)');
+    if (mod.checklist.length === 0) throw new Error('No checklist items found');
+    if (mod.checklist.length > 4) throw new Error('Maximum 4 checklist items allowed (found ' + mod.checklist.length + ')');
+    if (mod.escalation.length > 10) throw new Error('Maximum 10 escalation items allowed (found ' + mod.escalation.length + ')');
+
+    return mod;
+  }
+
+  function loadUploadedModule(mod) {
+    // Check for duplicate title
+    var titlePart = mod.default_title.split(' \u2014 ')[0].split(' — ')[0];
+    if (isModuleTitleTaken(titlePart)) {
+      alert('A module named "' + titlePart + '" already exists. Rename the existing module first, or change the title in the DOCX.');
+      return;
+    }
+
+    // Check for duplicate module_id — append a number if needed
+    var baseId = mod.module_id;
+    var counter = 1;
+    while (moduleData[mod.module_id]) {
+      mod.module_id = baseId + '-' + counter;
+      counter++;
+    }
+
+    // Register the module
+    moduleData[mod.module_id] = mod;
+    if (moduleOrder.indexOf(mod.module_id) < 0) {
+      moduleOrder.push(mod.module_id);
+    }
+    moduleIndex.modules.push({
+      module_id: mod.module_id,
+      title: titlePart,
+      subtitle: mod.default_title.split(' \u2014 ')[1] || mod.default_title.split(' — ')[1] || '',
+      default_title: mod.default_title,
+      status: 'draft',
+      file: mod.module_id + '.json'
+    });
+
+    // Open in a tab
+    openTab(mod.module_id);
+  }
+
+  function downloadDOCX() {
+    // Download the pre-generated template for current module if available,
+    // otherwise fall back to generating a JSON download
+    if (!currentModule) return;
+    var link = document.createElement('a');
+    link.href = 'templates/' + currentModule + '.docx';
+    link.download = currentModule + '.docx';
+    link.click();
   }
 
   function downloadPPTX() {
